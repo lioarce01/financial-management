@@ -10,7 +10,7 @@ Gráficas y Visualización: Chart.js para mostrar datos financieros de manera vi
 
 ### Backend
 
-Node.js con NestJS y TypeScript
+Node.js con ExpressJS, Prisma, Typescript, PostgreSQL, Redis, RabbitMQ y Helmet.
 
 ### Arquitectura de Microservicios:
 
