@@ -1,0 +1,33 @@
+{
+  "name": "financial-management-backend",
+  "version": "1.0.0",
+  "description": "React con TypeScript\r Framework de Estilos: Tailwind CSS para un diseño rápido y responsivo.\r Gestión de Estado: Redux Toolkit para manejar el estado de la aplicación.\r Autenticación: Auth0 para un inicio de sesión seguro y verificación de usuarios.\r Gráficas y Visualización: Chart.js para mostrar datos financieros de manera visual.\r Socket.IO: Escucha eventos del backend y actualiza la vista del usuario o muestra notificaciones en tiempo real.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.21.1",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "pg": "^8.13.1",
+    "prisma": "^5.21.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.8.4",
+    "install": "^0.13.0",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
