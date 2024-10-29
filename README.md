@@ -7,10 +7,12 @@ Framework de Estilos: Tailwind CSS para un diseño rápido y responsivo.
 Gestión de Estado: Redux Toolkit para manejar el estado de la aplicación.
 Autenticación: Auth0 para un inicio de sesión seguro y verificación de usuarios.
 Gráficas y Visualización: Chart.js para mostrar datos financieros de manera visual.
+Socket.IO: Escucha eventos del backend y actualiza la vista del usuario o muestra notificaciones en tiempo real.
 
 ### Backend
 
 Node.js con ExpressJS, Prisma, Typescript, PostgreSQL, Redis, RabbitMQ y Helmet.
+Socket.IO: Emite eventos de actualización de saldo o nuevas transacciones al frontend cada vez que el backend recibe nuevos datos desde la API bancaria o el sistema de cuentas.
 
 ### Arquitectura de Microservicios:
 
@@ -39,11 +41,11 @@ Base de Datos
 
 ### PostgreSQL
 
-como base de datos relacional para almacenar los datos principales (transacciones, cuentas, historial de usuarios).
+Base de datos relacional para almacenar los datos principales (transacciones, cuentas, historial de usuarios).
 
 ### Redis
 
-para caché y almacenamiento temporal de datos frecuentemente solicitados, mejorando la velocidad de respuesta.
+Para caché y almacenamiento temporal de datos frecuentemente solicitados, mejorando la velocidad de respuesta.
 Colas y Mensajería
 
 ### RabbitMQ
