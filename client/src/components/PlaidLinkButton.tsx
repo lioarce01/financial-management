@@ -8,7 +8,7 @@ import {
   useCreateLinkTokenMutation,
   useExchangePublicTokenMutation,
   useSetAccessTokenMutation,
-} from "../redux/api/plaidApi";
+} from "../app/redux/api/plaidApi";
 import { useToast } from "@/hooks/use-toast";
 
 export default function PlaidLinkButton() {
