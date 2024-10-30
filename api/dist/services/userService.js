@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.createUser = exports.getUserById = exports.getAllUsers = void 0;
+exports.updateUser = exports.deleteUser = exports.createUser = exports.getUserById = exports.getAllUsers = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const prisma = new client_1.PrismaClient();
@@ -57,15 +57,37 @@ const createUser = async ({ username, email, password }) => {
 exports.createUser = createUser;
 const deleteUser = async (id) => {
     try {
-        const user = await prisma.user.delete({
-            where: {
-                id: id,
-            },
-        });
-        return { message: "User deleted successfully" };
+        const user = await prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        await prisma.user.delete({ where: { id } });
     }
     catch (error) {
         console.error("Error deleting user", error);
     }
 };
 exports.deleteUser = deleteUser;
+const updateUser = async (id, { username, email, password }) => {
+    try {
+        const user = await prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            throw new Error("User not found");
+        }
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: {
+                username,
+                email,
+                passwordHash: password
+                    ? bcrypt_1.default.hashSync(password, 10)
+                    : user.passwordHash,
+            },
+        });
+        return updatedUser;
+    }
+    catch (error) {
+        console.error("Error updating user", error);
+    }
+};
+exports.updateUser = updateUser;

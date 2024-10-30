@@ -20,23 +20,21 @@ Organizacion de backend en servicios independientes para manejar autenticación,
 APIs REST.
 Validación y Seguridad: Helmet para protección contra vulnerabilidades y class-validator para validar la entrada de datos.
 
-# Microservicios
-
 ### Autenticación:
 
-Microservicio para manejo de autenticación y autorización.
+manejo de autenticación y autorización.
 
 ### Transacciones:
 
-Microservicio independiente para procesar y registrar transacciones (implementable en una segunda fase), utilizando colas de mensajes como RabbitMQ para garantizar procesamiento seguro.
+procesar y registrar transacciones (implementable en una segunda fase), utilizando colas de mensajes como RabbitMQ para garantizar procesamiento seguro.
 
 ### Cuentas Bancarias y Gastos:
 
-Microservicio que conecta con APIs de terceros como Plaid para obtener y actualizar datos bancarios del usuario.
+conecxion con APIs de terceros como Plaid para obtener y actualizar datos bancarios del usuario.
 
 ### Manejo de Notificaciones:
 
-Un microservicio para enviar notificaciones (por email o push) cuando se detecten actividades importantes.
+enviar notificaciones (por email o push) cuando se detecten actividades importantes.
 Base de Datos
 
 ### PostgreSQL
