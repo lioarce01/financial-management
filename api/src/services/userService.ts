@@ -1,12 +1,16 @@
-import { PrismaClient, User } from "@prisma/client";
-import bcrypt from "bcrypt";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 interface CreateUserInput {
-  username: string;
+  name: string;
   email: string;
-  password: string;
+  auth0Id: string;
+}
+
+interface UpdateUserInput {
+  name?: string;
+  email?: string;
 }
 
 const getAllUsers = async () => {
@@ -14,8 +18,6 @@ const getAllUsers = async () => {
     const users = await prisma.user.findMany({
       include: {
         accounts: true,
-        budgets: true,
-        goals: true,
       },
     });
     return users;
@@ -25,16 +27,17 @@ const getAllUsers = async () => {
   }
 };
 
-const getUserById = async (id: string) => {
+const getUserById = async (auth0Id: string) => {
+  if (!auth0Id) {
+    throw new Error("auth0Id must be provided");
+  }
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: id,
+        auth0Id: auth0Id,
       },
       include: {
         accounts: true,
-        budgets: true,
-        goals: true,
       },
     });
 
@@ -44,17 +47,30 @@ const getUserById = async (id: string) => {
   }
 };
 
-const createUser = async ({ username, email, password }: CreateUserInput) => {
-  const passwordHash = await bcrypt.hash(password, 10);
-  const createdUser = await prisma.user.create({
-    data: {
-      username,
-      email,
-      passwordHash,
+const createUser = async ({ name, email, auth0Id }: CreateUserInput) => {
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email: email,
     },
   });
 
-  return createdUser;
+  if (existingUser) {
+    throw new Error("User already exists");
+  }
+
+  try {
+    const user = await prisma.user.create({
+      data: {
+        name: name,
+        email: email,
+        auth0Id: auth0Id,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error creating user", error);
+    throw error;
+  }
 };
 
 const deleteUser = async (id: string) => {
@@ -69,10 +85,7 @@ const deleteUser = async (id: string) => {
   }
 };
 
-const updateUser = async (
-  id: string,
-  { username, email, password }: CreateUserInput
-) => {
+const updateUser = async (id: string, { name, email }: UpdateUserInput) => {
   try {
     const user = await prisma.user.findUnique({ where: { id } });
 
@@ -82,11 +95,8 @@ const updateUser = async (
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
-        username,
+        name,
         email,
-        passwordHash: password
-          ? bcrypt.hashSync(password, 10)
-          : user.passwordHash,
       },
     });
 
