@@ -1,14 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { plaidApi } from "../api/plaidApi";
-import accountReducer from "../slices/accountSlice";
+import { plaidApi } from "../api/plaid";
+import { userApi } from "../api/user";
+import plaidReducer from "../slices/plaidSlice";
+import userReducer from "../slices/userSlice";
 
 export const store = configureStore({
   reducer: {
     [plaidApi.reducerPath]: plaidApi.reducer,
-    account: accountReducer,
+    [userApi.reducerPath]: userApi.reducer,
+    plaid: plaidReducer,
+    user: userReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(plaidApi.middleware),
+    getDefaultMiddleware().concat(plaidApi.middleware, userApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
