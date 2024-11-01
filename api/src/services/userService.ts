@@ -49,22 +49,17 @@ const getUserById = async (auth0Id: string) => {
 
 const createUser = async ({ name, email, auth0Id }: CreateUserInput) => {
   const existingUser = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
+    where: { email },
   });
 
   if (existingUser) {
-    throw new Error("User already exists");
+    console.log("User already exists");
+    return existingUser;
   }
 
   try {
     const user = await prisma.user.create({
-      data: {
-        name: name,
-        email: email,
-        auth0Id: auth0Id,
-      },
+      data: { name, email, auth0Id },
     });
     return user;
   } catch (error) {

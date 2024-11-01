@@ -1,4 +1,6 @@
-import Dashboard from "@/components/AccountsList";
+"use client";
+
+import Dashboard from "@/components/Dashboard";
 import React from "react";
 
 const DashboardPage = () => {
