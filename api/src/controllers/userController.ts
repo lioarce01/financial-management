@@ -108,19 +108,27 @@ export const getTransactionsController = async (
   req: Request,
   res: Response
 ) => {
+  const { userId } = req.params;
+  const { offset = 0, limit = 10 } = req.query;
+
   try {
-    const { userId } = req.params;
+    const { results, count } = await getTransactions(
+      Number(offset),
+      Number(limit),
+      userId
+    );
 
-    const transactions = await getTransactions(userId);
-
-    if (!transactions || transactions.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No transactions found for user", transactions: [] });
+    if (!results || results.length === 0) {
+      return res.status(404).json({
+        message: "No transactions found for user",
+        results: [],
+        count,
+      });
     }
 
-    res.status(200).json(transactions);
+    res.status(200).json({ results, count });
   } catch (error) {
     console.error("Error fetching transactions:", error);
+    res.status(500).json({ message: "Internal server error  " });
   }
 };

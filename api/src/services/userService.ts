@@ -84,10 +84,21 @@ const updateUser = async (id: string, { name, email }: UpdateUserInput) => {
   }
 };
 
-const getTransactions = async (userId: string) => {
-  return await prisma.transaction.findMany({
-    where: { userId },
-  });
+const getTransactions = async (
+  offset: number,
+  limit: number,
+  userId: string
+) => {
+  const [transactions, totalCount] = await Promise.all([
+    prisma.transaction.findMany({
+      where: { userId },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.transaction.count({ where: { userId } }),
+  ]);
+
+  return { results: transactions, count: totalCount };
 };
 
 const getAccounts = async (userId: string) => {
