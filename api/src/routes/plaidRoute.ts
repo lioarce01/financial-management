@@ -1,14 +1,14 @@
 import { Router } from "express";
 import {
   createLinkToken,
-  exchangePublicToken,
-  getAccounts,
+  exchangePublicTokenController,
+  getAccountsController,
 } from "../controllers/plaid.controller";
 
 const router = Router();
 
 router.post("/link-token", createLinkToken);
-router.post("/exchange-token", exchangePublicToken);
-router.get("/accounts/:userId", getAccounts);
+router.post("/exchange-token", exchangePublicTokenController);
+router.get("/accounts/:userId", getAccountsController);
 
 export default router;

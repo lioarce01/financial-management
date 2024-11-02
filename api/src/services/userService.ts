@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -27,45 +27,27 @@ const getAllUsers = async () => {
   }
 };
 
-const getUserById = async (auth0Id: string) => {
+const getUserById = async (auth0Id: string): Promise<User | null> => {
   if (!auth0Id) {
     throw new Error("auth0Id must be provided");
   }
+
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        auth0Id: auth0Id,
-      },
-      include: {
-        accounts: true,
-      },
+      where: { auth0Id },
+      include: { accounts: true },
     });
-
     return user;
   } catch (error) {
-    console.error("Error fetching user by id", error);
+    console.error("Error fetching user by auth0Id:", error);
+    throw error;
   }
 };
 
-const createUser = async ({ name, email, auth0Id }: CreateUserInput) => {
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
+const createUser = async ({ auth0Id, name, email }: CreateUserInput) => {
+  return await prisma.user.create({
+    data: { auth0Id, name, email },
   });
-
-  if (existingUser) {
-    console.log("User already exists");
-    return existingUser;
-  }
-
-  try {
-    const user = await prisma.user.create({
-      data: { name, email, auth0Id },
-    });
-    return user;
-  } catch (error) {
-    console.error("Error creating user", error);
-    throw error;
-  }
 };
 
 const deleteUser = async (id: string) => {

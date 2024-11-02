@@ -1,38 +1,48 @@
-import { PrismaClient } from "@prisma/client";
+import { client } from "../config/plaid";
+import { prisma } from "../config/prisma";
 
-const prisma = new PrismaClient();
+export const getAccounts = async (userId: string) => {
+  return await prisma.account.findMany({
+    where: { userId },
+  });
+};
 
-export const saveAccounts = async (userId: string, accountsData: any[]) => {
-  const savedAccounts = [];
+export const fetchAndSaveAccounts = async (
+  accessToken: any,
+  userId: string
+) => {
+  const accountsResponse = await client.accountsGet({
+    access_token: accessToken,
+  });
 
-  for (const accountData of accountsData) {
-    const account = await prisma.account.upsert({
-      where: {
-        plaidAccountId: accountData.account_id,
-      },
-      update: {
-        userId,
-        plaidAccountId: accountData.account_id,
-        mask: accountData.mask,
-        name: accountData.name,
-        officialName: accountData.official_name,
-        subtype: accountData.subtype,
-        type: accountData.type,
-        balance: accountData.balance_id,
-      },
-      create: {
-        userId,
-        plaidAccountId: accountData.account_id,
-        mask: accountData.mask,
-        name: accountData.name,
-        officialName: accountData.official_name,
-        subtype: accountData.subtype,
-        type: accountData.type,
-        balance: accountData.balance_id,
-      },
-    });
-    savedAccounts.push(account);
-  }
+  const accountPromises = accountsResponse.data.accounts.map(
+    async (account) => {
+      return prisma.account.upsert({
+        where: { plaidAccountId: account.account_id, userId },
+        create: {
+          plaidAccountId: account.account_id,
+          userId: userId,
+          mask: account.mask ?? "",
+          name: account.name,
+          officialName: account.official_name,
+          subtype: account.subtype ?? "",
+          type: account.type,
+          balance: account.balances.current ?? 0,
+          currency: account.balances.iso_currency_code,
+        },
+        update: {
+          mask: account.mask ?? "",
+          name: account.name,
+          officialName: account.official_name,
+          subtype: account.subtype ?? "",
+          type: account.type,
+          balance: account.balances.current ?? 0,
+          currency: account.balances.iso_currency_code,
+        },
+      });
+    }
+  );
 
-  return savedAccounts;
+  await Promise.all(accountPromises);
+  return accountsResponse.data.accounts;
 };

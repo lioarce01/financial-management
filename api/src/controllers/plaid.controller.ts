@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { client } from "../config/plaid";
 import { prisma } from "../config/prisma";
 import { CountryCode, Products } from "plaid";
+import {
+  exchangePublicToken,
+  updateUserAccessToken,
+} from "../services/plaidService";
+import { fetchAndSaveAccounts, getAccounts } from "../services/accountService";
+import { getInstitutionDetails } from "../services/institutionService";
 
 export async function createLinkToken(req: Request, res: Response) {
   try {
@@ -49,121 +55,52 @@ export async function createLinkToken(req: Request, res: Response) {
   }
 }
 
-export async function exchangePublicToken(req: Request, res: Response) {
+export const exchangePublicTokenController = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { public_token, userId } = req.body;
 
     if (!public_token || !userId) {
       return res.status(400).json({
-        error: "Missing required parameters: public_token or userId",
+        message: "Missing required parameters: public_token or userId",
       });
     }
 
-    // First, check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const accessToken = await exchangePublicToken(public_token);
+    await updateUserAccessToken(userId, accessToken);
 
-    if (!existingUser) {
-      return res.status(404).json({
-        error: "User not found",
-      });
-    }
-
-    // Exchange public token for access token
-    const exchangeResponse = await client.itemPublicTokenExchange({
-      public_token: public_token,
-    });
-
-    const accessToken = exchangeResponse.data.access_token;
-
-    // Update user with new access token
-    await prisma.user.update({
-      where: { id: userId },
-      data: { plaidAccessToken: accessToken },
-    });
-
-    // Fetch accounts associated with this access token
-    const accountsResponse = await client.accountsGet({
-      access_token: accessToken,
-    });
-
-    // Create or update accounts
-    const accountPromises = accountsResponse.data.accounts.map(
-      async (account: any) => {
-        return prisma.account.upsert({
-          where: { plaidAccountId: account.account_id },
-          create: {
-            plaidAccountId: account.account_id,
-            userId: userId,
-            mask: account.mask ?? "",
-            name: account.name,
-            officialName: account.official_name,
-            subtype: account.subtype,
-            type: account.type,
-            balance: account.balances.current ?? 0,
-            currency: account.balances.iso_currency_code,
-          },
-          update: {
-            mask: account.mask ?? "",
-            name: account.name,
-            officialName: account.official_name,
-            subtype: account.subtype,
-            type: account.type,
-            balance: account.balances.current ?? 0,
-            currency: account.balances.iso_currency_code,
-          },
-        });
-      }
-    );
-
-    await Promise.all(accountPromises);
-
-    // Get institution details
-    const item = await client.itemGet({
-      access_token: accessToken,
-    });
-
-    const institution = await client.institutionsGetById({
-      institution_id: item.data.item.institution_id!,
-      country_codes: [CountryCode.Us],
-    });
+    const accounts = await fetchAndSaveAccounts(accessToken, userId);
+    const institution = await getInstitutionDetails(accessToken);
 
     return res.json({
       success: true,
-      institution: {
-        name: institution.data.institution.name,
-        id: item.data.item.institution_id,
-      },
-      accounts: accountsResponse.data.accounts.length,
+      institution,
+      accountsCount: accounts.length,
     });
   } catch (error) {
     console.error("Error exchanging public token:", error);
-    return res.status(500).json({
-      error: "Failed to exchange public token",
-      details: error instanceof Error ? error.message : "Unknown error",
-    });
+    return res
+      .status(500)
+      .json({ message: "Failed to exchange public token." });
   }
-}
+};
 
-export const getAccounts = async (req: Request, res: Response) => {
+export const getAccountsController = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
 
-    if (!userId) {
-      return res.status(400).json({
-        error: "Missing required field",
-        details: "userId is required",
-      });
-    }
+    const accounts = await getAccounts(userId);
 
-    const accounts = await prisma.account.findMany({
-      where: { userId },
-    });
+    if (!accounts || accounts.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No accounts found for user", accounts: [] });
+    }
 
     res.json(accounts);
   } catch (error) {
     console.error("Error fetching accounts:", error);
-    res.status(500).json({ error: "Failed to fetch accounts" });
   }
 };

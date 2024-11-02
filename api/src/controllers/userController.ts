@@ -21,46 +21,39 @@ export const getAllUsersController = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserByIdController = async (req: Request, res: Response) => {
+export const getUserByIdController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { auth0Id } = req.params;
+
   try {
-    const { auth0Id } = req.params;
-
-    if (!auth0Id) {
-      return res.status(400).json({ message: "auth0Id is required" });
-    }
-
     const user = await getUserById(auth0Id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    } else {
-      return res.status(200).json(user);
+      res.status(404).json({ message: "User not found" });
+      return;
     }
+    res.status(200).json(user);
   } catch (error) {
-    return res.status(500).json({ message: "Error fetching user by id" });
+    res.status(500).json({ message: "Error fetching user by id" });
   }
 };
 
 export const createUserController = async (req: Request, res: Response) => {
-  const { name, email, auth0Id } = req.body;
-
-  if (!name || !email || !auth0Id) {
-    return res
-      .status(400)
-      .json({ message: "Please provide all required fields" });
-  }
+  const { auth0Id, name, email } = req.body;
 
   try {
-    const user = await createUser({ name, email, auth0Id });
-    return res.status(201).json(user);
-  } catch (error) {
-    const e = error as Error;
-    console.error("Error creating user", error);
+    const existingUser = await getUserById(auth0Id);
 
-    if (e.message === "User already exists") {
-      return res.status(409).json({ message: "User already exists" });
+    if (existingUser) {
+      return res.status(200).json(existingUser);
     }
 
-    return res.status(500).json({ message: "Error creating user" });
+    const newUser = await createUser({ auth0Id, name, email });
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
