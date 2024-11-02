@@ -20,7 +20,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
             <div className="flex space-x-4">
               <div className="text-2xl font-bold">
                 {showTotalBalance
-                  ? `$${totalBalance?.toLocaleString()}`
+                  ? `$ ${totalBalance?.toLocaleString()}`
                   : "****"}
               </div>
               <button
@@ -43,14 +43,14 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-medium">Monthly Income</CardTitle>
-          <DollarSign className="h-6 w-6 text-muted-foreground" />
+          <TrendingUp className="h-6 w-6 text-muted-foreground" />
         </CardHeader>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
             <div className="flex space-x-4">
               <div className="text-2xl font-bold">
                 {showMonthlyIncome
-                  ? `$${monthlyIncome?.toLocaleString()}`
+                  ? `$ ${monthlyIncome?.toLocaleString()}`
                   : "******"}
               </div>
               <button
@@ -75,13 +75,13 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-medium">Monthly Spent</CardTitle>
-          <DollarSign className="h-6 w-6 text-muted-foreground" />
+          <ArrowUpDown className="h-6 w-6 text-muted-foreground" />
         </CardHeader>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
             <div className="flex space-x-4">
               <div className="text-2xl font-bold">
-                {showMonthlySpent ? `$${monthlySpent}` : "******"}
+                {showMonthlySpent ? `$ ${monthlySpent}` : "******"}
               </div>
               <button
                 onClick={() => setShowMonthlySpent(!showMonthlySpent)}

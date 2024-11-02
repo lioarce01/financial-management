@@ -5,7 +5,7 @@ import { Bell, Settings } from "lucide-react";
 
 import AccountsList from "./AccountsList";
 import { useFetchUser } from "@/hooks/useFetchUser";
-import { useGetAccountsQuery } from "@/app/redux/api/plaid";
+import { useGetAccountsQuery } from "@/app/redux/api/user";
 import TransactionsList from "./TransactionsList";
 import MontlyOverview from "./MontlyOverview";
 

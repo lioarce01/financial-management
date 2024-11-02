@@ -7,8 +7,12 @@ import { RootState } from "@/app/redux/store/store";
 import {
   useCreateLinkTokenMutation,
   useExchangeTokenMutation,
-  useGetAccountsQuery,
 } from "@/app/redux/api/plaid";
+import {
+  useGetAccountsQuery,
+  useGetTransactionsQuery,
+} from "@/app/redux/api/user";
+
 import {
   setLinkToken,
   setLinkLoading,
@@ -16,6 +20,7 @@ import {
   setAccounts,
   setExchanging,
   setExchangeError,
+  setTransactions,
 } from "@/app/redux/slices/plaidSlice";
 import { setUser } from "@/app/redux/slices/userSlice";
 import AuthButtons from "./AuthButtons";
@@ -33,6 +38,7 @@ export default function PlaidLink() {
     isExchanging,
     exchangeError,
     accounts,
+    transactions,
   } = useSelector((state: RootState) => state.plaid);
 
   const {
@@ -47,6 +53,12 @@ export default function PlaidLink() {
   const { refetch: refetchAccounts } = useGetAccountsQuery(dbUser?.id ?? "", {
     skip: !dbUser?.id || !isAuthenticated,
   });
+  const { refetch: refetchTransactions } = useGetTransactionsQuery(
+    dbUser?.id ?? "",
+    {
+      skip: !dbUser?.id || !isAuthenticated,
+    }
+  );
 
   const generateToken = useCallback(async () => {
     if (!dbUser?.email || !dbUser?.name) {
@@ -73,6 +85,7 @@ export default function PlaidLink() {
       );
 
       await refetchAccounts();
+      await refetchTransactions();
     } catch (error) {
       console.error("Error generating link token:", error);
       dispatch(
@@ -83,7 +96,7 @@ export default function PlaidLink() {
     } finally {
       dispatch(setLinkLoading(false));
     }
-  }, [dbUser, createLinkToken, dispatch, refetchAccounts]);
+  }, [dbUser, createLinkToken, dispatch, refetchAccounts, refetchTransactions]);
 
   const onSuccess = useCallback(
     async (public_token: string, metadata: any) => {
@@ -102,6 +115,7 @@ export default function PlaidLink() {
           dispatch(setExchangeError(null));
 
           await refetchAccounts();
+          await refetchTransactions();
         } catch (error) {
           console.error("Error exchanging token:", error);
           dispatch(
@@ -119,7 +133,7 @@ export default function PlaidLink() {
         dispatch(setExchangeError("User ID is not available"));
       }
     },
-    [exchangeToken, dbUser, dispatch, refetchAccounts]
+    [exchangeToken, dbUser, dispatch, refetchAccounts, refetchTransactions]
   );
 
   const { open, ready } = usePlaidLink({
@@ -153,7 +167,11 @@ export default function PlaidLink() {
     if (accounts.length > 0) {
       dispatch(setAccounts(accounts));
     }
-  }, [accounts, dispatch]);
+
+    if (transactions.length > 0) {
+      dispatch(setTransactions(transactions));
+    }
+  }, [accounts, dispatch, transactions]);
 
   if (isUserLoading) {
     return <div>Loading...</div>;

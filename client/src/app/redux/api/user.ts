@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:4000/" }),
-
+  tagTypes: ["Accounts", "Transactions", "User"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => "users",
@@ -34,6 +34,32 @@ export const userApi = createApi({
         method: "PUT",
       }),
     }),
+    getAccounts: builder.query<any[], string>({
+      query: (userId) => `users/accounts/${userId}`,
+      providesTags: ["Accounts"],
+      transformResponse: (response: any) => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response.accounts) {
+          return response.accounts;
+        }
+        return [];
+      },
+    }),
+    getTransactions: builder.query<any[], string>({
+      query: (userId) => `users/transactions/${userId}`,
+      providesTags: ["Transactions"],
+      transformResponse: (response: any) => {
+        if (Array.isArray(response)) {
+          return response;
+        }
+        if (response.transactions) {
+          return response.transactions;
+        }
+        return [];
+      },
+    }),
   }),
 });
 
@@ -43,4 +69,6 @@ export const {
   useCreateUserMutation,
   useDeleteUserMutation,
   useUpdateUserMutation,
+  useGetAccountsQuery,
+  useGetTransactionsQuery,
 } = userApi;

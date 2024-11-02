@@ -21,7 +21,7 @@ export const plaidApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
   }),
-  tagTypes: ["Accounts"],
+  tagTypes: ["Accounts", "Transactions"],
   endpoints: (builder) => ({
     createLinkToken: builder.mutation<
       CreateLinkTokenResponse,
@@ -39,26 +39,10 @@ export const plaidApi = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Accounts"],
-    }),
-    getAccounts: builder.query<any[], string>({
-      query: (userId) => `/plaid/accounts/${userId}`,
-      providesTags: ["Accounts"],
-      transformResponse: (response: any) => {
-        if (Array.isArray(response)) {
-          return response;
-        }
-        if (response.accounts) {
-          return response.accounts;
-        }
-        return [];
-      },
+      invalidatesTags: ["Accounts", "Transactions"],
     }),
   }),
 });
 
-export const {
-  useCreateLinkTokenMutation,
-  useExchangeTokenMutation,
-  useGetAccountsQuery,
-} = plaidApi;
+export const { useCreateLinkTokenMutation, useExchangeTokenMutation } =
+  plaidApi;
