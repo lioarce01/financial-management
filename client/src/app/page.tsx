@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser, clearUser } from "@/app/redux/slices/userSlice";
 import PlaidLink from "@/components/PlaidLink";
-import AccountsList from "@/components/AccountsList";
+import AccountsList from "@/components/Dashboard/AccountsList";
 import AuthButtons from "@/components/AuthButtons";
 
 export default function Home() {

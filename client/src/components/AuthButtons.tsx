@@ -19,20 +19,20 @@ const AuthButtons: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="mt-2">
       {isAuthenticated ? (
         <button
-          className="bg-black text-white px-4 py-2 rounded hover:bg-black/90 transition-all duration-300 ease-in-out"
+          className="flex items-center space-x-2 text-sm text-gray-600 hover:text-red-600"
           onClick={handleLogout}
         >
-          Cerrar Sesión
+          <span>Logout</span>
         </button>
       ) : (
         <button
-          className="bg-black text-white px-4 py-2 rounded hover:bg-black/90 transition-all duration-300 ease-in-out"
+          className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600"
           onClick={handleLogin}
         >
-          Iniciar Sesión
+          <span>Login</span>
         </button>
       )}
     </div>

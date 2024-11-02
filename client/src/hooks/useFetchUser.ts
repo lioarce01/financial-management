@@ -16,29 +16,31 @@ export function useFetchUser() {
   const [createUser] = useCreateUserMutation();
   const [isUserCreated, setIsUserCreated] = useState(false);
 
-  // Only fetch the database user if the user exists in Auth0 and is created in the DB
+  const auth0Id = auth0User?.email || null;
+
   const {
     data: dbUser,
     isLoading: isDbLoading,
     error: dbError,
     refetch,
-    isFetching,
-  } = useGetUserByIdQuery(auth0User?.email ?? "", {
-    skip: !auth0User?.email || !isUserCreated,
+  } = useGetUserByIdQuery(auth0Id ?? "", {
+    skip: !auth0Id || !isUserCreated,
   });
 
   useEffect(() => {
     const ensureUserExists = async () => {
-      if (!auth0User?.email || !auth0User?.name || !isAuthenticated) return;
+      if (!auth0Id || !auth0User?.name || !isAuthenticated) return;
 
       try {
-        // If the user doesn't exist in the database, create them
+        // Only attempt to create the user if they are not yet created
         if (!isUserCreated && !dbUser) {
           const result = await createUser({
             name: auth0User.name,
             email: auth0User.email,
-            auth0Id: auth0User.email!,
+            auth0Id, // Use auth0Id from Auth0 sub for creation
           }).unwrap();
+
+          // Set isUserCreated to true if the user was successfully created
           setIsUserCreated(true);
           return result;
         }
@@ -48,7 +50,7 @@ export function useFetchUser() {
     };
 
     ensureUserExists();
-  }, [auth0User, isAuthenticated, isUserCreated, dbUser, createUser]);
+  }, [auth0Id, auth0User, isAuthenticated, isUserCreated, dbUser, createUser]);
 
   return {
     data: dbUser,
@@ -56,7 +58,7 @@ export function useFetchUser() {
     error: dbError,
     refetch,
     isAuthenticated,
-    isFetching,
+    isFetching: isAuth0Loading || isDbLoading,
     isUserCreated,
   };
 }
