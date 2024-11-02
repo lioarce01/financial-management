@@ -5,6 +5,8 @@ import {
   createUser,
   deleteUser,
   updateUser,
+  getTransactions,
+  getAccounts,
 } from "../services/userService";
 
 export const getAllUsersController = async (req: Request, res: Response) => {
@@ -81,5 +83,44 @@ export const updateUserController = async (req: Request, res: Response) => {
     return res.status(200).json(user);
   } catch (error) {
     return res.status(500).json({ message: "Error updating user" });
+  }
+};
+
+export const getAccountsController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const accounts = await getAccounts(userId);
+
+    if (!accounts || accounts.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No accounts found for user", accounts: [] });
+    }
+
+    res.json(accounts);
+  } catch (error) {
+    console.error("Error fetching accounts:", error);
+  }
+};
+
+export const getTransactionsController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { userId } = req.params;
+
+    const transactions = await getTransactions(userId);
+
+    if (!transactions || transactions.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No transactions found for user", transactions: [] });
+    }
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
   }
 };

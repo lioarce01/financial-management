@@ -1,4 +1,3 @@
-// institutionService.js
 import { client } from "../config/plaid";
 import { CountryCode } from "plaid";
 

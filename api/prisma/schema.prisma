@@ -14,19 +14,20 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid())
-  auth0Id          String    @unique
-  email            String    @unique
+  id               String        @id @default(uuid())
+  auth0Id          String        @unique
+  email            String        @unique
   plaidAccessToken String?
   name             String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   accounts         Account[]
+  transactions     Transaction[]
 }
 
 model Account {
-  id             String  @id @default(uuid())
-  plaidAccountId String  @unique
+  id             String        @id @default(uuid())
+  plaidAccountId String        @unique
   userId         String
   mask           String
   name           String
@@ -35,5 +36,26 @@ model Account {
   type           String
   balance        Float?
   currency       String?
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+}
+
+model Transaction {
+  id                String   @id @default(cuid())
+  accountId         String
+  userId            String
+  transaction_id    String
+  amount            Float
+  iso_currency_code String?
+  date              DateTime
+  name              String
+  merchant_name     String?
+  pending           Boolean
+  payment_channel   String?
+  transaction_type  String?
+  logo_url          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  account           Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

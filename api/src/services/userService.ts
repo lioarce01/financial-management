@@ -18,6 +18,7 @@ const getAllUsers = async () => {
     const users = await prisma.user.findMany({
       include: {
         accounts: true,
+        transactions: true,
       },
     });
     return users;
@@ -35,7 +36,7 @@ const getUserById = async (auth0Id: string): Promise<User | null> => {
   try {
     const user = await prisma.user.findUnique({
       where: { auth0Id },
-      include: { accounts: true },
+      include: { accounts: true, transactions: true },
     });
     return user;
   } catch (error) {
@@ -83,4 +84,24 @@ const updateUser = async (id: string, { name, email }: UpdateUserInput) => {
   }
 };
 
-export { getAllUsers, getUserById, createUser, deleteUser, updateUser };
+const getTransactions = async (userId: string) => {
+  return await prisma.transaction.findMany({
+    where: { userId },
+  });
+};
+
+const getAccounts = async (userId: string) => {
+  return await prisma.account.findMany({
+    where: { userId },
+  });
+};
+
+export {
+  getAllUsers,
+  getUserById,
+  createUser,
+  deleteUser,
+  updateUser,
+  getTransactions,
+  getAccounts,
+};

@@ -1,12 +1,6 @@
 import { client } from "../config/plaid";
 import { prisma } from "../config/prisma";
 
-export const getAccounts = async (userId: string) => {
-  return await prisma.account.findMany({
-    where: { userId },
-  });
-};
-
 export const fetchAndSaveAccounts = async (
   accessToken: any,
   userId: string

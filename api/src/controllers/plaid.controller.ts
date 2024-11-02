@@ -6,8 +6,9 @@ import {
   exchangePublicToken,
   updateUserAccessToken,
 } from "../services/plaidService";
-import { fetchAndSaveAccounts, getAccounts } from "../services/accountService";
+import { fetchAndSaveAccounts } from "../services/accountService";
 import { getInstitutionDetails } from "../services/institutionService";
+import { fetchAndSaveTransactions } from "../services/transactionService";
 
 export async function createLinkToken(req: Request, res: Response) {
   try {
@@ -19,7 +20,6 @@ export async function createLinkToken(req: Request, res: Response) {
       });
     }
 
-    // Find user first
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -72,6 +72,9 @@ export const exchangePublicTokenController = async (
     await updateUserAccessToken(userId, accessToken);
 
     const accounts = await fetchAndSaveAccounts(accessToken, userId);
+
+    await fetchAndSaveTransactions(accessToken, userId);
+
     const institution = await getInstitutionDetails(accessToken);
 
     return res.json({
@@ -84,23 +87,5 @@ export const exchangePublicTokenController = async (
     return res
       .status(500)
       .json({ message: "Failed to exchange public token." });
-  }
-};
-
-export const getAccountsController = async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-
-    const accounts = await getAccounts(userId);
-
-    if (!accounts || accounts.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No accounts found for user", accounts: [] });
-    }
-
-    res.json(accounts);
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
   }
 };
