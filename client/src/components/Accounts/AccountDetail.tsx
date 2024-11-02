@@ -8,6 +8,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { formatAmount } from "@/lib/utils";
+import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
 
 interface Account {
   id: string;
@@ -38,6 +39,7 @@ export default function AccountDetail({
           <AlertDialogTitle className="text-2xl font-bold">
             Account Details
           </AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">{`Details for account ${account.id}`}</AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">

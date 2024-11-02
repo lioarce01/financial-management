@@ -57,6 +57,7 @@ export default function TransactionDetail({
             )}
             Transaction Details
           </AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">{`Details for transaction ${transaction.id}`}</AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
