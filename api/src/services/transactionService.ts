@@ -23,12 +23,11 @@ export const fetchAndSaveTransactions = async (
       const accountId = accountMap[transaction.account_id];
 
       return prisma.transaction.upsert({
-        where: { id: transaction.transaction_id },
+        where: { plaidTransactionId: transaction.transaction_id },
         create: {
-          id: transaction.transaction_id,
+          plaidTransactionId: transaction.transaction_id,
           accountId: accountId,
           userId: userId,
-          transaction_id: transaction.transaction_id,
           amount: transaction.amount,
           iso_currency_code: transaction.iso_currency_code,
           date: new Date(transaction.date),

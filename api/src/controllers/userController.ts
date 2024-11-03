@@ -45,14 +45,14 @@ export const createUserController = async (req: Request, res: Response) => {
   const { auth0Id, name, email } = req.body;
 
   try {
-    const existingUser = await getUserById(auth0Id);
-
-    if (existingUser) {
-      return res.status(200).json(existingUser);
-    }
-
     const newUser = await createUser({ auth0Id, name, email });
-    res.status(201).json(newUser);
+
+    if (newUser) {
+      res.status(201).json(newUser);
+    } else {
+      console.error("Failed to create user");
+      res.status(400).json({ message: "Failed to create user" });
+    }
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ error: "Internal server error" });

@@ -46,9 +46,22 @@ const getUserById = async (auth0Id: string): Promise<User | null> => {
 };
 
 const createUser = async ({ auth0Id, name, email }: CreateUserInput) => {
-  return await prisma.user.create({
-    data: { auth0Id, name, email },
-  });
+  try {
+    const existingUser = await getUserById(auth0Id);
+
+    if (existingUser) {
+      console.log("User already exists:", existingUser);
+      return existingUser;
+    }
+    const newUser = await prisma.user.create({
+      data: { auth0Id, name, email },
+    });
+    console.log("User created:", newUser);
+    return newUser;
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw error;
+  }
 };
 
 const deleteUser = async (id: string) => {
@@ -89,13 +102,19 @@ const getTransactions = async (
   limit: number,
   userId: string
 ) => {
+  if (!userId || typeof userId !== "string" || userId.length !== 24) {
+    throw new Error("Invalid userId");
+  }
+
   const [transactions, totalCount] = await Promise.all([
     prisma.transaction.findMany({
       where: { userId },
       skip: offset,
       take: limit,
     }),
-    prisma.transaction.count({ where: { userId } }),
+    prisma.transaction.count({
+      where: { userId },
+    }),
   ]);
 
   return { results: transactions, count: totalCount };
