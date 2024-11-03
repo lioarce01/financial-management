@@ -1,11 +1,13 @@
 import { resetPlaidState } from "@/app/redux/slices/plaidSlice";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useDispatch } from "react-redux";
 
 const AuthButtons: React.FC = () => {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const handleLogout = () => {
     dispatch(resetPlaidState());
@@ -16,20 +18,22 @@ const AuthButtons: React.FC = () => {
 
   const handleLogin = async () => {
     await loginWithRedirect();
+
+    router.push("/dashboard");
   };
 
   return (
     <div className="mt-2">
       {isAuthenticated ? (
         <button
-          className="flex items-center space-x-2 text-sm text-gray-600 hover:text-red-600"
+          className="py-1 px-4 bg-red-500 hover:bg-red-600 transition-all duration-300 text-white rounded"
           onClick={handleLogout}
         >
           <span>Logout</span>
         </button>
       ) : (
         <button
-          className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600"
+          className="py-1 px-4 bg-green-500 hover:bg-green-600 transition-all duration-300 text-white rounded"
           onClick={handleLogin}
         >
           <span>Login</span>

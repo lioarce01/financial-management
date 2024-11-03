@@ -23,7 +23,7 @@ const AccountsList = ({ accounts }: any) => {
               accounts.map((account: any) => (
                 <div
                   key={account.id}
-                  className="p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-200"
+                  className="p-4 border rounded-lg shadow-md bg-white hover:bg-gray-50 transition-all duration-300 ease-in-out"
                 >
                   <div className="flex justify-between items-center">
                     <div className="font-semibold text-lg text-gray-800">

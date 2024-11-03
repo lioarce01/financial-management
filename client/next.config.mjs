@@ -2,7 +2,12 @@
 
 const nextConfig = {
   images: {
-    domains: ["plaid-merchant-logos.plaid.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
 };
 

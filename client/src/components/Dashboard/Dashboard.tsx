@@ -38,8 +38,8 @@ const DashboardPage = () => {
 
   const { data } = useGetTransactionsQuery(
     {
-      offset: (currentPage - 1) * itemsPerPage,
-      limit: itemsPerPage,
+      offset: 0,
+      limit: 5,
       userId,
     },
     {
@@ -50,9 +50,8 @@ const DashboardPage = () => {
   useEffect(() => {
     if (data) {
       dispatch(setTransaction(data.results));
-      dispatch({ type: "transactions/setTotalCount", payload: data.count });
     }
-  }, [data, dispatch, currentPage]);
+  }, [data, dispatch]);
 
   const totalBalance = accounts?.reduce(
     (acc, account) => acc + account.balance,

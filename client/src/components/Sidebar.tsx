@@ -3,21 +3,14 @@ import React from "react";
 import PlaidLink from "./PlaidLink";
 import UserMenu from "./UserMenu";
 import Link from "next/link";
-import { useFetchUser } from "@/hooks/useFetchUser";
 
 const Sidebar = () => {
-  const {
-    data: dbUser,
-    isLoading: isUserLoading,
-    isAuthenticated,
-  } = useFetchUser();
-
   return (
     <div className="w-64 bg-white border-r p-4">
       <div className="space-y-4">
         <h2 className="text-xl font-bold mb-6">Finance Hub</h2>
         {/* UserMenu */}
-        <UserMenu user={dbUser} />
+        <UserMenu />
         <nav className="space-y-2">
           <Link
             href="/dashboard"
