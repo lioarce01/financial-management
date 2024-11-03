@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowDownIcon, ArrowUpIcon, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,14 @@ import { useGetTransactionsQuery } from "@/app/redux/api/user";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { formatAmount, formatDate } from "@/lib/utils";
 import TransactionDetail from "./TransactionDetail";
+import { RootState } from "@/app/redux/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import Pagination from "../Pagination";
+import {
+  setCurrentPage,
+  setItemsPerPage,
+  setTransaction,
+} from "@/app/redux/slices/transactionSlice";
 
 interface Transaction {
   id: string;
@@ -36,19 +44,28 @@ interface Transaction {
 }
 
 export default function Transactions() {
+  const { transactions, totalCount, currentPage, itemsPerPage } = useSelector(
+    (state: RootState) => state.transactionState
+  );
   const {
     data: dbUser,
     isLoading: isUserLoading,
     isAuthenticated,
   } = useFetchUser();
-  const {
-    data: transactions,
-    error,
-    isLoading: isTransactionsLoading,
-    refetch: refetchTransactions,
-  } = useGetTransactionsQuery(dbUser?.id ?? "", {
-    skip: !dbUser?.id || !isAuthenticated,
-  });
+
+  const userId = dbUser?.id;
+
+  const { data, isLoading } = useGetTransactionsQuery(
+    {
+      offset: (currentPage - 1) * itemsPerPage,
+      limit: itemsPerPage,
+      userId,
+    },
+    {
+      skip: !userId || !isAuthenticated,
+    }
+  );
+  const dispatch = useDispatch();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTransaction, setSelectedTransaction] =
@@ -68,6 +85,17 @@ export default function Transactions() {
   const handleCloseModal = () => {
     setSelectedTransaction(null);
   };
+
+  const handlePageChange = (newPage: number) => {
+    dispatch(setCurrentPage(newPage));
+  };
+
+  useEffect(() => {
+    if (data) {
+      dispatch(setTransaction(data.results));
+      dispatch({ type: "transactions/setTotalCount", payload: data.count });
+    }
+  }, [data, dispatch, currentPage]);
 
   return (
     <div className="flex-1 overflow-hidden">
@@ -109,7 +137,7 @@ export default function Transactions() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTransactions && !isTransactionsLoading ? (
+                    {filteredTransactions && !isLoading ? (
                       filteredTransactions.map((transaction) => (
                         <TableRow
                           key={transaction.id}
@@ -149,7 +177,7 @@ export default function Transactions() {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center">
-                          {isTransactionsLoading
+                          {isLoading
                             ? "Loading transactions..."
                             : "No transactions found."}
                         </TableCell>
@@ -159,6 +187,13 @@ export default function Transactions() {
                 </Table>
               </div>
             </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(totalCount / itemsPerPage)}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={(value) => dispatch(setItemsPerPage(value))}
+            />
           </CardContent>
         </Card>
       </div>

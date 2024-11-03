@@ -5,7 +5,7 @@ import {
   useCreateUserMutation,
   useGetUserByIdQuery,
 } from "@/app/redux/api/user";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function useFetchUser() {
   const {
@@ -14,51 +14,71 @@ export function useFetchUser() {
     isLoading: isAuth0Loading,
   } = useAuth0();
   const [createUser] = useCreateUserMutation();
-  const [isUserCreated, setIsUserCreated] = useState(false);
-
-  const auth0Id = auth0User?.email || null;
+  const auth0Id = auth0User?.email || "";
+  const [hasAttemptedUserCreation, setHasAttemptedUserCreation] =
+    useState(false);
+  const [isUserCreated, setIsUserCreated] = useState(false); // New state to track user creation
 
   const {
     data: dbUser,
     isLoading: isDbLoading,
     error: dbError,
-    refetch,
-  } = useGetUserByIdQuery(auth0Id ?? "", {
-    skip: !auth0Id || !isUserCreated,
+    refetch: refetchUser, // Get refetch function
+  } = useGetUserByIdQuery(auth0Id, {
+    skip: !auth0Id || !isAuthenticated,
   });
 
   useEffect(() => {
-    const ensureUserExists = async () => {
-      if (!auth0Id || !auth0User?.name || !isAuthenticated) return;
-
-      try {
-        // Only attempt to create the user if they are not yet created
-        if (!isUserCreated && !dbUser) {
-          const result = await createUser({
+    const createUserIfNotExists = async () => {
+      // Check if the user is authenticated and if the user does not exist in the database
+      if (
+        isAuthenticated &&
+        !dbUser &&
+        auth0User?.name &&
+        !hasAttemptedUserCreation
+      ) {
+        try {
+          await createUser({
             name: auth0User.name,
             email: auth0User.email,
-            auth0Id, // Use auth0Id from Auth0 sub for creation
+            auth0Id,
           }).unwrap();
 
-          // Set isUserCreated to true if the user was successfully created
-          setIsUserCreated(true);
-          return result;
+          console.log("User created:", {
+            name: auth0User.name,
+            email: auth0User.email,
+            auth0Id,
+          });
+          setHasAttemptedUserCreation(true); // Mark that user creation has been attempted
+          setIsUserCreated(true); // Mark that the user was created
+        } catch (error) {
+          console.error("Error creating user:", error);
         }
-      } catch (error) {
-        console.error("Error ensuring user exists:", error);
       }
     };
 
-    ensureUserExists();
-  }, [auth0Id, auth0User, isAuthenticated, isUserCreated, dbUser, createUser]);
+    createUserIfNotExists();
+  }, [
+    isAuthenticated,
+    dbUser,
+    createUser,
+    auth0User,
+    auth0Id,
+    hasAttemptedUserCreation,
+  ]);
+
+  // Refetch user data after the user is created
+  useEffect(() => {
+    if (isUserCreated) {
+      refetchUser(); // Refetch the user data after creation
+      setIsUserCreated(false); // Reset the creation flag
+    }
+  }, [isUserCreated, refetchUser]);
 
   return {
     data: dbUser,
     isLoading: isAuth0Loading || isDbLoading,
     error: dbError,
-    refetch,
     isAuthenticated,
-    isFetching: isAuth0Loading || isDbLoading,
-    isUserCreated,
   };
 }

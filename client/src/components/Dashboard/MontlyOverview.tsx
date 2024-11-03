@@ -20,8 +20,8 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
             <div className="flex space-x-4">
               <div className="text-2xl font-bold">
                 {showTotalBalance
-                  ? `$ ${totalBalance?.toLocaleString()}`
-                  : "****"}
+                  ? `${totalBalance?.toLocaleString()}`
+                  : "******"}
               </div>
               <button
                 onClick={() => setShowTotalBalance(!showTotalBalance)}
@@ -50,7 +50,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
             <div className="flex space-x-4">
               <div className="text-2xl font-bold">
                 {showMonthlyIncome
-                  ? `$ ${monthlyIncome?.toLocaleString()}`
+                  ? `${monthlyIncome?.toLocaleString()}`
                   : "******"}
               </div>
               <button
@@ -81,7 +81,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
           <div className="flex flex-col">
             <div className="flex space-x-4">
               <div className="text-2xl font-bold">
-                {showMonthlySpent ? `$ ${monthlySpent}` : "******"}
+                {showMonthlySpent ? `${monthlySpent}` : "******"}
               </div>
               <button
                 onClick={() => setShowMonthlySpent(!showMonthlySpent)}

@@ -114,7 +114,7 @@ export default function TransactionDetail({
             <div>
               <span className="text-sm text-gray-500">Transaction ID</span>
               <span className="block font-medium text-xs break-all">
-                {transaction.transaction_id}
+                {transaction.id}
               </span>
             </div>
             <div>

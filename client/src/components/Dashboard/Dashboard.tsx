@@ -1,50 +1,66 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Bell, Settings } from "lucide-react";
 
 import AccountsList from "./AccountsList";
 import { useFetchUser } from "@/hooks/useFetchUser";
-import { useGetAccountsQuery } from "@/app/redux/api/user";
+import {
+  useGetAccountsQuery,
+  useGetTransactionsQuery,
+} from "@/app/redux/api/user";
 import TransactionsList from "./TransactionsList";
 import MontlyOverview from "./MontlyOverview";
+import { formatAmount } from "@/lib/utils";
+import { AppDispatch, RootState } from "@/app/redux/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCurrentPage,
+  setItemsPerPage,
+  setTransaction,
+} from "@/app/redux/slices/transactionSlice";
 
 const DashboardPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { transactions, currentPage, itemsPerPage } = useSelector(
+    (state: RootState) => state.transactionState
+  );
   const {
     data: dbUser,
     isLoading: isUserLoading,
     isAuthenticated,
   } = useFetchUser();
+  const userId = dbUser?.id;
 
-  const { data: accounts, refetch: refetchAccounts } = useGetAccountsQuery(
-    dbUser?.id ?? "",
+  const { data: accounts } = useGetAccountsQuery(userId ?? "", {
+    skip: !userId || !isAuthenticated,
+  });
+
+  const { data } = useGetTransactionsQuery(
     {
-      skip: !dbUser?.id || !isAuthenticated,
+      offset: (currentPage - 1) * itemsPerPage,
+      limit: itemsPerPage,
+      userId,
+    },
+    {
+      skip: !userId || !isAuthenticated,
     }
   );
+
+  useEffect(() => {
+    if (data) {
+      dispatch(setTransaction(data.results));
+      dispatch({ type: "transactions/setTotalCount", payload: data.count });
+    }
+  }, [data, dispatch, currentPage]);
 
   const totalBalance = accounts?.reduce(
     (acc, account) => acc + account.balance,
     0
   );
 
-  const mockTransactions = [
-    { id: 1, date: "2024-10-15", description: "Grocery Store", amount: -50.25 },
-    { id: 2, date: "2024-10-16", description: "Salary", amount: 3000.0 },
-    { id: 3, date: "2024-10-18", description: "Utility Bill", amount: -120.5 },
-    {
-      id: 4,
-      date: "2024-10-20",
-      description: "Online Subscription",
-      amount: -15.0,
-    },
-    { id: 5, date: "2024-10-25", description: "Restaurant", amount: -80.0 },
-    { id: 6, date: "2024-10-25", description: "Restaurant", amount: -80.0 },
-    { id: 7, date: "2024-10-25", description: "Restaurant", amount: -80.0 },
-  ];
-
   const monthlySpent = Math.abs(
-    mockTransactions.reduce(
+    transactions?.reduce(
       (acc, transaction) =>
         acc + (transaction.amount < 0 ? transaction.amount : 0),
       0
@@ -52,7 +68,7 @@ const DashboardPage = () => {
   );
 
   const monthlyIncome = Math.abs(
-    mockTransactions.reduce(
+    transactions?.reduce(
       (acc, transaction) =>
         acc + (transaction.amount > 0 ? transaction.amount : 0),
       0
@@ -77,9 +93,9 @@ const DashboardPage = () => {
 
         {/* Monthly Overview */}
         <MontlyOverview
-          totalBalance={totalBalance}
-          monthlySpent={monthlySpent}
-          monthlyIncome={monthlyIncome}
+          totalBalance={formatAmount(totalBalance)}
+          monthlySpent={formatAmount(monthlySpent)}
+          monthlyIncome={formatAmount(monthlyIncome)}
         />
 
         {/* Accounts and Spending Overview */}
@@ -87,10 +103,8 @@ const DashboardPage = () => {
           {/* Accounts List */}
           {isAuthenticated && <AccountsList accounts={accounts} />}
 
-          {/* Transaction History */}
-          {isAuthenticated && (
-            <TransactionsList transactions={mockTransactions} />
-          )}
+          {/* Transaction History Overview */}
+          {isAuthenticated && <TransactionsList transactions={transactions} />}
         </div>
       </div>
     </div>

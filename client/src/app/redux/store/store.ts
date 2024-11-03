@@ -5,6 +5,7 @@ import plaidReducer from "../slices/plaidSlice";
 import userReducer from "../slices/userSlice";
 import { persistReducer, persistStore } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
+import transactionReducer from "../slices/transactionSlice";
 
 const createNoopStorage = () => {
   return {
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   plaid: plaidReducer,
   user: userReducer,
+  transactionState: transactionReducer,
 });
 
 const localStorage = persistReducer(persistConfig, rootReducer);

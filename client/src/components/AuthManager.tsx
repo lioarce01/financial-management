@@ -19,12 +19,12 @@ export const AuthStateManager: React.FC<AuthStateManagerProps> = ({
   const { data: user, isLoading, isAuthenticated } = useFetchUser();
 
   useEffect(() => {
-    if (user && isAuthenticated && !reduxUser.isAuthenticated) {
+    if (user && user.id && isAuthenticated && !reduxUser.isAuthenticated) {
       dispatch(
         setUser({
           id: user.id,
-          email: user.email,
-          name: user.name,
+          email: user.email || "",
+          name: user.name || "",
         })
       );
     }
@@ -36,6 +36,10 @@ export const AuthStateManager: React.FC<AuthStateManagerProps> = ({
       dispatch(resetPlaidState());
     }
   }, [isAuthenticated, reduxUser.isAuthenticated, dispatch]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return <>{children}</>;
 };

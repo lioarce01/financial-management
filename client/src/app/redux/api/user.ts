@@ -1,5 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+interface getTransactionsArgs {
+  offset: number;
+  limit: number;
+  userId: string;
+}
+
+interface GetTransactionsResponse {
+  results: any[];
+  count: number;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:4000/" }),
@@ -47,18 +58,13 @@ export const userApi = createApi({
         return [];
       },
     }),
-    getTransactions: builder.query<any[], string>({
-      query: (userId) => `users/transactions/${userId}`,
+    getTransactions: builder.query<
+      GetTransactionsResponse,
+      getTransactionsArgs
+    >({
+      query: ({ offset = 0, limit = 10, userId }) =>
+        `users/transactions/${userId}?offset=${offset}&limit=${limit}`,
       providesTags: ["Transactions"],
-      transformResponse: (response: any) => {
-        if (Array.isArray(response)) {
-          return response;
-        }
-        if (response.transactions) {
-          return response.transactions;
-        }
-        return [];
-      },
     }),
   }),
 });

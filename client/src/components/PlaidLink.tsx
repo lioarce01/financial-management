@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { usePlaidLink } from "react-plaid-link";
 import { RootState } from "@/app/redux/store/store";
@@ -12,7 +12,6 @@ import {
   useGetAccountsQuery,
   useGetTransactionsQuery,
 } from "@/app/redux/api/user";
-
 import {
   setLinkToken,
   setLinkLoading,
@@ -20,26 +19,24 @@ import {
   setAccounts,
   setExchanging,
   setExchangeError,
-  setTransactions,
 } from "@/app/redux/slices/plaidSlice";
 import { setUser } from "@/app/redux/slices/userSlice";
+import { setTransaction } from "@/app/redux/slices/transactionSlice";
 import AuthButtons from "./AuthButtons";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { Button } from "./ui/button";
+
+interface GetTransactionsResponse {
+  results: any[];
+  count: number;
+}
 
 export default function PlaidLink() {
   const dispatch = useDispatch();
   const [initializationAttempted, setInitializationAttempted] = useState(false);
 
-  const {
-    linkToken,
-    isLinkLoading,
-    linkError,
-    isExchanging,
-    exchangeError,
-    accounts,
-    transactions,
-  } = useSelector((state: RootState) => state.plaid);
+  const { linkToken, isLinkLoading, linkError, isExchanging, exchangeError } =
+    useSelector((state: RootState) => state.plaid);
 
   const {
     data: dbUser,
@@ -50,15 +47,22 @@ export default function PlaidLink() {
   const [createLinkToken] = useCreateLinkTokenMutation();
   const [exchangeToken] = useExchangeTokenMutation();
 
-  const { refetch: refetchAccounts } = useGetAccountsQuery(dbUser?.id ?? "", {
-    skip: !dbUser?.id || !isAuthenticated,
-  });
-  const { refetch: refetchTransactions } = useGetTransactionsQuery(
-    dbUser?.id ?? "",
+  const userId = dbUser?.id;
+
+  const { data: accounts, refetch: refetchAccounts } = useGetAccountsQuery(
+    userId ?? "",
     {
-      skip: !dbUser?.id || !isAuthenticated,
+      skip: !userId || !isAuthenticated,
     }
   );
+  const { data: transactionsData, refetch: refetchTransactions } =
+    useGetTransactionsQuery(
+      { userId: userId ?? "", offset: 0, limit: 10 },
+      { skip: !userId || !isAuthenticated }
+    ) as {
+      data: GetTransactionsResponse | undefined;
+      refetch: () => Promise<any>;
+    };
 
   const generateToken = useCallback(async () => {
     if (!dbUser?.email || !dbUser?.name) {
@@ -80,12 +84,7 @@ export default function PlaidLink() {
       console.log("Link token generated successfully");
       dispatch(setLinkToken(response.linkToken));
 
-      dispatch(
-        setUser({ id: dbUser.id, email: dbUser.email, name: dbUser.name })
-      );
-
-      await refetchAccounts();
-      await refetchTransactions();
+      dispatch(setUser({ id: userId, email: dbUser.email, name: dbUser.name }));
     } catch (error) {
       console.error("Error generating link token:", error);
       dispatch(
@@ -96,50 +95,54 @@ export default function PlaidLink() {
     } finally {
       dispatch(setLinkLoading(false));
     }
-  }, [dbUser, createLinkToken, dispatch, refetchAccounts, refetchTransactions]);
+  }, [dbUser, createLinkToken, dispatch, userId]);
 
   const onSuccess = useCallback(
     async (public_token: string, metadata: any) => {
-      if (dbUser?.id) {
-        try {
-          dispatch(setExchanging(true));
-          console.log("Exchanging public token:", public_token);
-          console.log("Exchange metadata:", metadata);
-
-          const result = await exchangeToken({
-            public_token,
-            userId: dbUser.id,
-          }).unwrap();
-
-          console.log("Exchange result:", result);
-          dispatch(setExchangeError(null));
-
-          await refetchAccounts();
-          await refetchTransactions();
-        } catch (error) {
-          console.error("Error exchanging token:", error);
-          dispatch(
-            setExchangeError(
-              error instanceof Error
-                ? error.message
-                : "Failed to exchange token"
-            )
-          );
-        } finally {
-          dispatch(setExchanging(false));
-        }
-      } else {
+      if (!userId) {
         console.error("User ID is not available for token exchange");
         dispatch(setExchangeError("User ID is not available"));
+        return;
+      }
+
+      try {
+        dispatch(setExchanging(true));
+        console.log("Exchanging public token:", public_token);
+        console.log("Exchange metadata:", metadata);
+
+        const result = await exchangeToken({
+          public_token,
+          userId,
+        }).unwrap();
+
+        console.log("Exchange result:", result);
+        dispatch(setExchangeError(null));
+
+        await refetchAccounts();
+        await refetchTransactions();
+      } catch (error) {
+        console.error("Error exchanging token:", error);
+        dispatch(
+          setExchangeError(
+            error instanceof Error ? error.message : "Failed to exchange token"
+          )
+        );
+      } finally {
+        dispatch(setExchanging(false));
       }
     },
-    [exchangeToken, dbUser, dispatch, refetchAccounts, refetchTransactions]
+    [exchangeToken, userId, dispatch, refetchAccounts, refetchTransactions]
   );
 
-  const { open, ready } = usePlaidLink({
-    token: linkToken ?? "",
-    onSuccess,
-  });
+  const config = useMemo(
+    () => ({
+      token: linkToken ?? "",
+      onSuccess,
+    }),
+    [linkToken, onSuccess]
+  );
+
+  const { open, ready } = usePlaidLink(config);
 
   useEffect(() => {
     if (
@@ -148,7 +151,7 @@ export default function PlaidLink() {
       !linkToken &&
       !isLinkLoading &&
       !initializationAttempted &&
-      dbUser.id
+      userId
     ) {
       setInitializationAttempted(true);
       generateToken();
@@ -158,20 +161,19 @@ export default function PlaidLink() {
     dbUser,
     linkToken,
     isLinkLoading,
-    dbUser?.id,
+    userId,
     generateToken,
     initializationAttempted,
   ]);
 
   useEffect(() => {
-    if (accounts.length > 0) {
+    if (accounts) {
       dispatch(setAccounts(accounts));
     }
-
-    if (transactions.length > 0) {
-      dispatch(setTransactions(transactions));
+    if (transactionsData) {
+      dispatch(setTransaction(transactionsData.results));
     }
-  }, [accounts, dispatch, transactions]);
+  }, [accounts, transactionsData, dispatch]);
 
   if (isUserLoading) {
     return <div>Loading...</div>;
@@ -189,7 +191,7 @@ export default function PlaidLink() {
   if (linkError || exchangeError) {
     return (
       <div className="text-red-500">
-        <p>{linkError || exchangeError || !accounts}</p>
+        <p>{linkError || exchangeError}</p>
         <button
           onClick={generateToken}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
