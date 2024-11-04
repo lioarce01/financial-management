@@ -15,12 +15,15 @@ import { formatAmount } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/app/redux/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setTransaction } from "@/app/redux/slices/transactionSlice";
+import { setAccounts } from "@/app/redux/slices/accountSlice";
 
 const DashboardPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { transactions } = useSelector(
     (state: RootState) => state.transactionState
   );
+  const { accounts } = useSelector((state: RootState) => state.accountState);
+
   const {
     data: dbUser,
     isLoading: isUserLoading,
@@ -28,11 +31,18 @@ const DashboardPage = () => {
   } = useFetchUser();
   const userId = dbUser?.id;
 
-  const { data: accounts } = useGetAccountsQuery(userId ?? "", {
-    skip: !userId || !isAuthenticated,
-  });
+  const { data: dbAccounts } = useGetAccountsQuery(
+    {
+      offset: 0,
+      limit: 3,
+      userId,
+    },
+    {
+      skip: !userId || !isAuthenticated,
+    }
+  );
 
-  const { data } = useGetTransactionsQuery(
+  const { data: dbTransactions } = useGetTransactionsQuery(
     {
       offset: 0,
       limit: 5,
@@ -44,10 +54,13 @@ const DashboardPage = () => {
   );
 
   useEffect(() => {
-    if (data) {
-      dispatch(setTransaction(data.results));
+    if (dbTransactions) {
+      dispatch(setTransaction(dbTransactions.results));
     }
-  }, [data, dispatch]);
+    if (dbAccounts) {
+      dispatch(setAccounts(dbAccounts.results));
+    }
+  }, [dbTransactions, dbAccounts, dispatch]);
 
   const totalBalance = accounts?.reduce(
     (acc, account) => acc + account.balance,

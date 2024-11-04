@@ -101,7 +101,12 @@ export default function AccountDetail({
           </div>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Close</AlertDialogCancel>
+          <AlertDialogCancel
+            className="border-none bg-neutral-950 hover:bg-neutral-900 text-white hover:text-white transition-all duration-300 ease-in-out"
+            onClick={onClose}
+          >
+            Close
+          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

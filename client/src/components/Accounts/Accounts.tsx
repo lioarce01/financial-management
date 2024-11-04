@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +16,14 @@ import { useFetchUser } from "@/hooks/useFetchUser";
 import { formatAmount } from "@/lib/utils";
 import AccountDetail from "./AccountDetail";
 import { Search } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/redux/store/store";
+import {
+  setCurrentPage,
+  setItemsPerPage,
+  setAccounts,
+} from "@/app/redux/slices/accountSlice";
+import Pagination from "../Pagination";
 
 interface Account {
   id: string;
@@ -31,22 +39,29 @@ interface Account {
 }
 
 export default function Accounts() {
+  const { accounts, totalCount, currentPage, itemsPerPage } = useSelector(
+    (state: RootState) => state.accountState
+  );
   const {
     data: dbUser,
     isLoading: isUserLoading,
     isAuthenticated,
   } = useFetchUser();
-  const {
-    data: accounts,
-    error,
-    isLoading: isAccountsLoading,
-  } = useGetAccountsQuery(dbUser?.id ?? "", {
-    skip: !dbUser?.id || !isAuthenticated,
-  });
+  const userId = dbUser?.id;
+  const { data, isLoading } = useGetAccountsQuery(
+    {
+      offset: (currentPage - 1) * itemsPerPage,
+      limit: itemsPerPage,
+      userId,
+    },
+    {
+      skip: !userId || !isAuthenticated,
+    }
+  );
+  const dispatch = useDispatch();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-
   const filteredAccounts = accounts?.filter((account) => {
     const matchesSearch =
       account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,16 +78,27 @@ export default function Accounts() {
     setSelectedAccount(null);
   };
 
+  const handlePageChange = (newPage: number) => {
+    dispatch(setCurrentPage(newPage));
+  };
+
+  useEffect(() => {
+    if (data) {
+      dispatch(setAccounts(data.results));
+      dispatch({ type: "accounts/setTotalCount", payload: data.count });
+    }
+  }, [data, dispatch, currentPage]);
+
   return (
     <div className="flex-1 overflow-hidden">
       <div className="h-full overflow-y-auto px-4 py-6 lg:px-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Accounts</h1>
 
         <Card className="mb-8">
-          <CardHeader className="bg-blue-50 rounded-t-lg p-4 sm:p-6">
+          <CardHeader className="bg-gray-100 rounded-t-lg p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <CardTitle className="text-xl sm:text-2xl font-semibold text-blue-800">
-                Account List
+              <CardTitle className="text-xl sm:text-2xl font-bold text-neutral-800">
+                Account Connected
               </CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <div className="relative w-full sm:w-64">
@@ -101,7 +127,7 @@ export default function Accounts() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredAccounts && !isAccountsLoading ? (
+                    {filteredAccounts && !isLoading ? (
                       filteredAccounts.map((account) => (
                         <TableRow
                           key={account.id}
@@ -125,7 +151,7 @@ export default function Accounts() {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center">
-                          {isAccountsLoading
+                          {isLoading
                             ? "Loading accounts..."
                             : "No accounts found."}
                         </TableCell>
@@ -135,6 +161,13 @@ export default function Accounts() {
                 </Table>
               </div>
             </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(totalCount / itemsPerPage)}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={(value) => dispatch(setItemsPerPage(value))}
+            />
           </CardContent>
         </Card>
       </div>

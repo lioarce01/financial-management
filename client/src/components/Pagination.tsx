@@ -23,7 +23,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="p-2 rounded-full bg-gray-800 text-white disabled:opacity-50 hover:bg-gray-700 transition-colors duration-300"
+        className="p-2 rounded-full bg-neutral-900 text-white disabled:opacity-50 hover:bg-neutral-800 transition-colors duration-300"
       >
         <ChevronLeftIcon size={20} />
       </button>
@@ -33,7 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="p-2 rounded-full bg-gray-800 text-white disabled:opacity-50 hover:bg-gray-700 transition-colors duration-300"
+        className="p-2 rounded-full bg-neutral-900 text-white disabled:opacity-50 hover:bg-neutral-800 transition-colors duration-300"
       >
         <ChevronRightIcon size={20} />
       </button>

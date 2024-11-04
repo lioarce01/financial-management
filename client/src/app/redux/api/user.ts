@@ -11,6 +11,17 @@ interface GetTransactionsResponse {
   count: number;
 }
 
+interface GetAccountsArgs {
+  offset: number;
+  limit: number;
+  userId: string;
+}
+
+interface GetAccountsResponse {
+  results: any[];
+  count: number;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:4000/" }),
@@ -45,18 +56,10 @@ export const userApi = createApi({
         method: "PUT",
       }),
     }),
-    getAccounts: builder.query<any[], string>({
-      query: (userId) => `users/accounts/${userId}`,
+    getAccounts: builder.query<GetAccountsResponse, GetAccountsArgs>({
+      query: ({ offset = 0, limit = 10, userId }) =>
+        `users/accounts/${userId}?offset=${offset}&limit=${limit}`,
       providesTags: ["Accounts"],
-      transformResponse: (response: any) => {
-        if (Array.isArray(response)) {
-          return response;
-        }
-        if (response.accounts) {
-          return response.accounts;
-        }
-        return [];
-      },
     }),
     getTransactions: builder.query<
       GetTransactionsResponse,

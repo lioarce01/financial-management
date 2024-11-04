@@ -31,6 +31,11 @@ interface GetTransactionsResponse {
   count: number;
 }
 
+interface GetAccountsResponse {
+  results: any[];
+  count: number;
+}
+
 export default function PlaidLink() {
   const dispatch = useDispatch();
   const [initializationAttempted, setInitializationAttempted] = useState(false);
@@ -49,11 +54,9 @@ export default function PlaidLink() {
 
   const userId = dbUser?.id;
 
-  const { data: accounts, refetch: refetchAccounts } = useGetAccountsQuery(
-    userId ?? "",
-    {
-      skip: !userId || !isAuthenticated,
-    }
+  const { data: accountsData, refetch: refetchAccounts } = useGetAccountsQuery(
+    { userId: userId ?? "", offset: 0, limit: 10 },
+    { skip: !userId || !isAuthenticated }
   );
   const { data: transactionsData, refetch: refetchTransactions } =
     useGetTransactionsQuery(
@@ -167,13 +170,13 @@ export default function PlaidLink() {
   ]);
 
   useEffect(() => {
-    if (accounts) {
-      dispatch(setAccounts(accounts));
+    if (accountsData) {
+      dispatch(setAccounts(accountsData.results));
     }
     if (transactionsData) {
       dispatch(setTransaction(transactionsData.results));
     }
-  }, [accounts, transactionsData, dispatch]);
+  }, [accountsData, transactionsData, dispatch]);
 
   if (isUserLoading) {
     return <div>Loading...</div>;

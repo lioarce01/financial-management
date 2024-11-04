@@ -71,7 +71,7 @@ export default function Transactions() {
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
 
-  const filteredTransactions = transactions?.filter((transaction) => {
+  const filteredTransactions = transactions?.filter((transaction: any) => {
     const matchesSearch =
       transaction.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       transaction.amount.toString().includes(searchTerm);
@@ -103,9 +103,9 @@ export default function Transactions() {
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Transactions</h1>
 
         <Card className="mb-8">
-          <CardHeader className="bg-blue-50 rounded-t-lg p-4 sm:p-6">
+          <CardHeader className="bg-gray-100 rounded-t-lg p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <CardTitle className="text-xl sm:text-2xl font-semibold text-blue-800">
+              <CardTitle className="text-xl sm:text-2xl font-bold text-neutral-800">
                 Transaction History
               </CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
