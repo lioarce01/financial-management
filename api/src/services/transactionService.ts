@@ -22,12 +22,10 @@ export const fetchAndSaveTransactions = async (
     async (transaction: any) => {
       const accountId = accountMap[transaction.account_id];
 
-      // Step 1: Check if category ID is provided in the transaction
-      let categoryId = transaction.category_id; // Ensure this is valid
+      let categoryId = transaction.category_id;
 
       let existingCategory;
 
-      // Step 2: Validate categoryId before trying to find it
       if (
         categoryId &&
         typeof categoryId === "string" &&
@@ -38,9 +36,8 @@ export const fetchAndSaveTransactions = async (
         });
       }
 
-      // Step 3: If the category does not exist, create it (if necessary)
       if (!existingCategory) {
-        const categories = transaction.category || []; // Fallback to category names if needed
+        const categories = transaction.category || [];
         const categoryPromises = categories.map(async (category: any) => {
           return prisma.category.create({
             data: {
@@ -50,10 +47,9 @@ export const fetchAndSaveTransactions = async (
         });
 
         const newCategories = await Promise.all(categoryPromises);
-        categoryId = newCategories.length > 0 ? newCategories[0].id : null; // Use the first created category
+        categoryId = newCategories.length > 0 ? newCategories[0].id : null;
       }
 
-      // Step 4: Upsert transaction
       return prisma.transaction.upsert({
         where: { plaidTransactionId: transaction.transaction_id },
         create: {
@@ -69,7 +65,7 @@ export const fetchAndSaveTransactions = async (
           payment_channel: transaction.payment_channel,
           transaction_type: transaction.transaction_type,
           logo_url: transaction.logo_url,
-          categoryId: categoryId, // Associate the category ID here
+          categoryId: categoryId,
         },
         update: {
           amount: transaction.amount,
@@ -81,7 +77,7 @@ export const fetchAndSaveTransactions = async (
           payment_channel: transaction.payment_channel,
           transaction_type: transaction.transaction_type,
           logo_url: transaction.logo_url,
-          categoryId: categoryId, // Update the category ID if it changes
+          categoryId: categoryId,
         },
       });
     }
