@@ -1,41 +1,81 @@
-import { ArrowUpDown, Landmark, WalletCards } from "lucide-react";
-import React from "react";
+import {
+  ArrowUpDown,
+  Landmark,
+  WalletCards,
+  ArrowRightFromLine,
+  ArrowLeftFromLine,
+} from "lucide-react";
+import React, { useState } from "react";
 import PlaidLink from "./PlaidLink";
 import UserMenu from "./UserMenu";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  const handleClose = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className="w-64 bg-white border-r p-4">
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold mb-6">Finance Hub</h2>
-        {/* UserMenu */}
-        <UserMenu />
-        <nav className="space-y-2">
-          <Link
-            href="/dashboard"
-            className="flex items-center space-x-2 text-sm w-full p-2 rounded-lg bg-blue-50"
-          >
-            <WalletCards className="h-4 w-4" />
-            <span>Dashboard</span>
-          </Link>
-          <Link
-            href="/transactions"
-            className="flex items-center space-x-2 text-sm w-full p-2 rounded-lg hover:bg-gray-100"
-          >
-            <ArrowUpDown className="h-4 w-4" />
-            <span>Transactions</span>
-          </Link>
-          <Link
-            href="/accounts"
-            className="flex items-center space-x-2 text-sm w-full p-2 rounded-lg hover:bg-gray-100"
-          >
-            <Landmark className="h-4 w-4" />
-            <span>Accounts</span>
-          </Link>
-          <PlaidLink />
-        </nav>
+    <div
+      className={`w-${
+        isOpen ? "64" : "16"
+      } bg-white border-r p-4 transition-all duration-300 h-screen flex flex-col`}
+    >
+      {/* Encabezado del Sidebar */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className={`text-xl font-bold ${isOpen ? "" : "hidden"}`}>
+          Bankly Hub
+        </h2>
+        <button
+          className="p-2 hover:bg-gray-100 rounded transition-all duration-300"
+          onClick={handleClose}
+        >
+          {isOpen ? (
+            <ArrowLeftFromLine className="h-5 w-5" />
+          ) : (
+            <ArrowRightFromLine className="h-5 w-5" />
+          )}
+        </button>
       </div>
+
+      {/* Navegación */}
+      <nav className="space-y-2 flex-grow">
+        <Link
+          href="/dashboard"
+          className={`flex items-center space-x-2 text-sm w-full p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/dashboard" ? "bg-blue-100" : "hover:bg-gray-100"
+          }`}
+        >
+          <WalletCards className="h-5 w-5" />
+          {isOpen && <span>Dashboard</span>}
+        </Link>
+        <Link
+          href="/transactions"
+          className={`flex items-center space-x-2 text-sm w-full p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/transactions" ? "bg-blue-100" : "hover:bg-gray-100"
+          }`}
+        >
+          <ArrowUpDown className="h-5 w-5" />
+          {isOpen && <span>Transactions</span>}
+        </Link>
+        <Link
+          href="/accounts"
+          className={`flex items-center space-x-2 text-sm w-full p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/accounts" ? "bg-blue-100" : "hover:bg-gray-100"
+          }`}
+        >
+          <Landmark className="h-5 w-5" />
+          {isOpen && <span>Accounts</span>}
+        </Link>
+        {isOpen && <PlaidLink />}
+      </nav>
+
+      {/* UserMenu y AuthButtons en la parte inferior */}
+      <div className="mt-auto space-y-2">{isOpen && <UserMenu />}</div>
     </div>
   );
 };

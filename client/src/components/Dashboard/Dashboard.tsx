@@ -1,8 +1,8 @@
+// DashboardPage.tsx
 "use client";
 
 import React, { useEffect } from "react";
-import { Bell, Settings } from "lucide-react";
-
+import { Bell } from "lucide-react";
 import AccountsList from "./AccountsList";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import {
@@ -14,15 +14,11 @@ import MontlyOverview from "./MontlyOverview";
 import { formatAmount } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/app/redux/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setCurrentPage,
-  setItemsPerPage,
-  setTransaction,
-} from "@/app/redux/slices/transactionSlice";
+import { setTransaction } from "@/app/redux/slices/transactionSlice";
 
 const DashboardPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { transactions, currentPage, itemsPerPage } = useSelector(
+  const { transactions } = useSelector(
     (state: RootState) => state.transactionState
   );
   const {
@@ -81,11 +77,8 @@ const DashboardPage = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Financial Overview</h1>
           <div className="flex space-x-4">
-            <button className="p-2 rounded-lg hover:bg-gray-100">
+            <button className="p-2 rounded hover:bg-gray-100 transition-all duration-300">
               <Bell className="h-5 w-5" />
-            </button>
-            <button className="p-2 rounded-lg hover:bg-gray-100">
-              <Settings className="h-5 w-5" />
             </button>
           </div>
         </div>

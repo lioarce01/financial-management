@@ -54,7 +54,7 @@ const Navbar = () => {
         </a>
 
         {/* User Menu and Auth Buttons */}
-        <div className="flex flex-col items-center space-y-3 sm:flex-row sm:space-x-4">
+        <div className="flex flex-col items-center sm:flex-row sm:space-x-4">
           <UserMenu />
           <AuthButtons />
         </div>
