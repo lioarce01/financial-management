@@ -133,6 +133,9 @@ const getAccounts = async (offset: number, limit: number, userId: string) => {
       where: { userId },
       skip: offset,
       take: limit,
+      include: {
+        holdings: true,
+      },
     }),
     prisma.account.count({
       where: { userId },

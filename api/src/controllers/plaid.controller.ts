@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
-import { client } from "../config/plaid";
-import { prisma } from "../config/prisma";
-import { CountryCode, Products } from "plaid";
 import {
+  createLinkTokenService,
   exchangePublicToken,
   updateUserAccessToken,
 } from "../services/plaidService";
 import { fetchAndSaveAccounts } from "../services/accountService";
 import { getInstitutionDetails } from "../services/institutionService";
 import { fetchAndSaveTransactions } from "../services/transactionService";
+import { fetchAndSaveHoldings } from "../services/investmentService";
 
 export async function createLinkToken(req: Request, res: Response) {
   try {
@@ -16,35 +15,15 @@ export async function createLinkToken(req: Request, res: Response) {
 
     if (!email || !name || !auth0Id) {
       return res.status(400).json({
-        error: "Missing required parameters: email, name, or auth0Id",
+        message: "Missing required parameters: email, name, or auth0Id",
       });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        error: "User not found. Please ensure user is registered first.",
-      });
-    }
-
-    const configs = {
-      user: {
-        client_user_id: user.id,
-      },
-      client_name: "Your App Name",
-      products: [Products.Auth, Products.Transactions],
-      country_codes: [CountryCode.Us],
-      language: "en",
-    };
-
-    const createTokenResponse = await client.linkTokenCreate(configs);
+    const { linkToken, userId } = await createLinkTokenService(email);
 
     return res.json({
-      linkToken: createTokenResponse.data.link_token,
-      userId: user.id,
+      linkToken,
+      userId,
     });
   } catch (error) {
     console.error("Error creating link token:", error);
@@ -71,16 +50,20 @@ export const exchangePublicTokenController = async (
     const accessToken = await exchangePublicToken(public_token);
     await updateUserAccessToken(userId, accessToken);
 
-    const accounts = await fetchAndSaveAccounts(accessToken, userId);
-
-    await fetchAndSaveTransactions(accessToken, userId);
-
-    const institution = await getInstitutionDetails(accessToken);
+    const [accounts, transactions, institution, holdings] = await Promise.all([
+      fetchAndSaveAccounts(accessToken, userId),
+      fetchAndSaveTransactions(accessToken, userId),
+      getInstitutionDetails(accessToken),
+      fetchAndSaveHoldings(accessToken, userId),
+    ]);
 
     return res.json({
       success: true,
       institution,
+      holdings,
       accountsCount: accounts.length,
+      transactionsCount: transactions.length,
+      holdingsCount: holdings.length,
     });
   } catch (error) {
     console.error("Error exchanging public token:", error);

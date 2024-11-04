@@ -22,6 +22,13 @@ export const fetchAndSaveTransactions = async (
     async (transaction: any) => {
       const accountId = accountMap[transaction.account_id];
 
+      if (!accountId) {
+        console.error(
+          `Account ID not found for transaction: ${transaction.transaction_id}`
+        );
+        return null;
+      }
+
       let categoryId = transaction.category_id;
 
       let existingCategory;

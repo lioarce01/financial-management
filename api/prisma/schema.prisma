@@ -38,6 +38,7 @@ model Account {
   currency       String?
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions   Transaction[]
+  holdings Holdings[]
 }
 
 model Transaction {
@@ -66,4 +67,19 @@ model Category {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
   primary         String?
   transactions Transaction[]  @relation("TransactionCategory")
+}
+
+model Holdings {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  accountId String @db.ObjectId
+  cost_basis  Float
+  institution_price Float
+  institution_price_as_of String
+  institution_value Float
+  quantity Float
+  iso_currency_code String
+  security_id String
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@unique([accountId, security_id])
 }

@@ -88,7 +88,7 @@ export const updateUserController = async (req: Request, res: Response) => {
 
 export const getAccountsController = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const { offset = 0, limit = 10 } = req.query;
+  const { offset = 0, limit = 3 } = req.query;
 
   try {
     const { results, count } = await getAccounts(
@@ -117,7 +117,7 @@ export const getTransactionsController = async (
   res: Response
 ) => {
   const { userId } = req.params;
-  const { offset = 0, limit = 10 } = req.query;
+  const { offset = 0, limit = 7 } = req.query;
 
   try {
     const { results, count } = await getTransactions(
