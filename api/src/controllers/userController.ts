@@ -88,14 +88,11 @@ export const updateUserController = async (req: Request, res: Response) => {
 
 export const getAccountsController = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const { offset = 0, limit = 3 } = req.query;
+  const offset = req.query.offset ? Number(req.query.offset) : undefined;
+  const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
   try {
-    const { results, count } = await getAccounts(
-      Number(offset),
-      Number(limit),
-      userId
-    );
+    const { results, count } = await getAccounts(userId, offset, limit);
 
     if (!results || results.length === 0) {
       return res.status(404).json({
@@ -117,14 +114,11 @@ export const getTransactionsController = async (
   res: Response
 ) => {
   const { userId } = req.params;
-  const { offset = 0, limit = 7 } = req.query;
+  const offset = req.query.offset ? Number(req.query.offset) : undefined;
+  const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
   try {
-    const { results, count } = await getTransactions(
-      Number(offset),
-      Number(limit),
-      userId
-    );
+    const { results, count } = await getTransactions(userId, offset, limit);
 
     if (!results || results.length === 0) {
       return res.status(404).json({

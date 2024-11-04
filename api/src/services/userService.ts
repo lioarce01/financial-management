@@ -98,23 +98,25 @@ const updateUser = async (id: string, { name, email }: UpdateUserInput) => {
 };
 
 const getTransactions = async (
-  offset: number,
-  limit: number,
-  userId: string
+  userId: string,
+  offset?: number,
+  limit?: number
 ) => {
   if (!userId || typeof userId !== "string" || userId.length !== 24) {
     throw new Error("Invalid userId");
   }
 
+  const transactionsQuery = {
+    where: { userId },
+    include: {
+      category: true,
+    },
+    ...(offset !== undefined && { skip: offset }),
+    ...(limit !== undefined && { take: limit }),
+  };
+
   const [transactions, totalCount] = await Promise.all([
-    prisma.transaction.findMany({
-      where: { userId },
-      skip: offset,
-      take: limit,
-      include: {
-        category: true,
-      },
-    }),
+    prisma.transaction.findMany(transactionsQuery),
     prisma.transaction.count({
       where: { userId },
     }),
@@ -123,20 +125,22 @@ const getTransactions = async (
   return { results: transactions, count: totalCount };
 };
 
-const getAccounts = async (offset: number, limit: number, userId: string) => {
+const getAccounts = async (userId: string, offset?: number, limit?: number) => {
   if (!userId || typeof userId !== "string" || userId.length !== 24) {
     throw new Error("Invalid userId");
   }
 
+  const accountsQuery = {
+    where: { userId },
+    include: {
+      holdings: true,
+    },
+    ...(offset !== undefined && { skip: offset }),
+    ...(limit !== undefined && { take: limit }),
+  };
+
   const [accounts, totalCount] = await Promise.all([
-    prisma.account.findMany({
-      where: { userId },
-      skip: offset,
-      take: limit,
-      include: {
-        holdings: true,
-      },
-    }),
+    prisma.account.findMany(accountsQuery),
     prisma.account.count({
       where: { userId },
     }),
