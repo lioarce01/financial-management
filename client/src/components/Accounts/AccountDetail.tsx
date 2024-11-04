@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatAmount } from "@/lib/utils";
 import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
+import copy from "copy-to-clipboard";
+import { ClipboardCheck } from "lucide-react";
 
 interface Account {
   id: string;
@@ -32,12 +34,28 @@ export default function AccountDetail({
   account,
   onClose,
 }: AccountDetailProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    copy(account.id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <AlertDialog open={true} onOpenChange={onClose}>
       <AlertDialogContent className="sm:max-w-[425px] bg-gray-50">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-2xl font-bold">
-            Account Details
+          <AlertDialogTitle className="text-2xl font-bold flex justify-between">
+            <div>Account Details</div>
+            <button onClick={handleCopy}>
+              <ClipboardCheck />
+            </button>
+            {copied && (
+              <div className="absolute top-0 right-0 text-neutral-800 mt-1 text-sm px-3 font-normal rounded shadow-md">
+                Copied
+              </div>
+            )}
           </AlertDialogTitle>
           <AlertDialogDescription className="sr-only">{`Details for account ${account.id}`}</AlertDialogDescription>
         </AlertDialogHeader>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,7 +11,8 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { formatAmount, formatDate } from "@/lib/utils";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, ClipboardCheck } from "lucide-react";
+import copy from "copy-to-clipboard";
 import Image from "next/image";
 
 interface Transaction {
@@ -27,6 +28,7 @@ interface Transaction {
   pending: boolean;
   payment_channel: string;
   transaction_type: string;
+  category: { primary: string };
   logo_url: string;
   createdAt: string;
   updatedAt: string;
@@ -41,21 +43,39 @@ export default function TransactionDetail({
   transaction,
   onClose,
 }: TransactionDetailProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    copy(transaction.id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <AlertDialog open={true} onOpenChange={onClose}>
       <AlertDialogContent className="sm:max-w-[500px] bg-gray-50 rounded-lg">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-2xl font-bold flex items-center gap-2">
-            {transaction.logo_url && (
-              <Image
-                src={transaction.logo_url}
-                alt={transaction.merchant_name}
-                width={32}
-                height={32}
-                className="rounded-full"
-              />
+          <AlertDialogTitle className="text-2xl font-bold flex items-center justify-between gap-2">
+            <div className="flex gap-2 items-center">
+              {transaction.logo_url && (
+                <Image
+                  src={transaction.logo_url}
+                  alt={transaction.merchant_name}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              )}
+              Transaction Details
+            </div>
+            <button onClick={handleCopy}>
+              <ClipboardCheck />
+            </button>
+            {copied && (
+              <div className="absolute top-0 right-0 text-neutral-800 mt-1 text-sm px-3 font-normal rounded shadow-md">
+                Copied
+              </div>
             )}
-            Transaction Details
           </AlertDialogTitle>
           <AlertDialogDescription className="sr-only">{`Details for transaction ${transaction.id}`}</AlertDialogDescription>
         </AlertDialogHeader>
@@ -100,7 +120,7 @@ export default function TransactionDetail({
               </span>
             </div>
             <div>
-              <span className="text-sm text-gray-500">Category</span>
+              <span className="text-sm text-gray-500">Transaction Type</span>
               <span className="block font-medium capitalize">
                 {transaction.transaction_type}
               </span>
@@ -118,9 +138,9 @@ export default function TransactionDetail({
               </span>
             </div>
             <div>
-              <span className="text-sm text-gray-500">Account ID</span>
+              <span className="text-sm text-gray-500">Category</span>
               <span className="block font-medium text-xs break-all">
-                {transaction.accountId}
+                {transaction.category.primary}
               </span>
             </div>
           </div>
@@ -145,6 +165,12 @@ export default function TransactionDetail({
                 <span className="block text-xs text-gray-400">User ID</span>
                 <span className="block text-sm break-all">
                   {transaction.userId}
+                </span>
+              </div>
+              <div>
+                <span className="block text-xs text-gray-400">Account ID</span>
+                <span className="block text-sm break-all">
+                  {transaction.accountId}
                 </span>
               </div>
             </div>
