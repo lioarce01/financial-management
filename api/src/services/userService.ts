@@ -120,10 +120,22 @@ const getTransactions = async (
   return { results: transactions, count: totalCount };
 };
 
-const getAccounts = async (userId: string) => {
-  return await prisma.account.findMany({
-    where: { userId },
-  });
+const getAccounts = async (offset: number, limit: number, userId: string) => {
+  if (!userId || typeof userId !== "string" || userId.length !== 24) {
+    throw new Error("Invalid userId");
+  }
+
+  const [accounts, totalCount] = await Promise.all([
+    prisma.account.findMany({
+      where: { userId },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.account.count({
+      where: { userId },
+    }),
+  ]);
+  return { results: accounts, count: totalCount };
 };
 
 export {
