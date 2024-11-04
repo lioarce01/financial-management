@@ -57,7 +57,7 @@ export default function TransactionDetail({
         <AlertDialogHeader>
           <AlertDialogTitle className="text-2xl font-bold flex items-center justify-between gap-2">
             <div className="flex gap-2 items-center">
-              {transaction.logo_url && (
+              {transaction.logo_url ? (
                 <Image
                   src={transaction.logo_url}
                   alt={transaction.merchant_name}
@@ -65,6 +65,8 @@ export default function TransactionDetail({
                   height={32}
                   className="rounded-full"
                 />
+              ) : (
+                <div className="bg-gray-200 p-5 rounded-full"></div>
               )}
               Transaction Details
             </div>
@@ -84,7 +86,7 @@ export default function TransactionDetail({
             <div>
               <span className="text-sm text-gray-500">Merchant</span>
               <span className="block font-medium">
-                {transaction.merchant_name}
+                {transaction.merchant_name ?? "Unknown"}
               </span>
             </div>
             <div>
@@ -140,7 +142,7 @@ export default function TransactionDetail({
             <div>
               <span className="text-sm text-gray-500">Category</span>
               <span className="block font-medium text-xs break-all">
-                {transaction.category.primary}
+                {transaction.category?.primary ?? "Unknown"}
               </span>
             </div>
           </div>

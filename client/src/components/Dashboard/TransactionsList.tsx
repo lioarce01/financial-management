@@ -9,9 +9,9 @@ import { TableCell, TableRow } from "../ui/table";
 const TransactionsList = ({ transactions }: any) => {
   return (
     <Card className="">
-      <CardHeader className="bg-blue-50 rounded-t-lg p-4">
+      <CardHeader className="bg-gray-100 rounded-t-lg p-4">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-semibold text-blue-800">
+          <CardTitle className="text-xl font-bold text-neutral-800">
             Transaction History
           </CardTitle>
           <Link href="/transactions" className="text-gray-500 hover:underline">
@@ -44,7 +44,7 @@ const TransactionsList = ({ transactions }: any) => {
                     <td className="py-3 px-4 border-b text-gray-600">
                       {transaction.name}
                     </td>
-                    <td className="py-3 px-4 border-b text-right">
+                    <td className="py-3 px-4 border-b text-right ">
                       {transaction.amount < 0 ? (
                         <span className="text-red-500 font-medium">
                           -${Math.abs(transaction.amount).toFixed(2)}

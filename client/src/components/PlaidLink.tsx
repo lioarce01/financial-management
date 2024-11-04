@@ -55,12 +55,12 @@ export default function PlaidLink() {
   const userId = dbUser?.id;
 
   const { data: accountsData, refetch: refetchAccounts } = useGetAccountsQuery(
-    { userId: userId ?? "", offset: 0, limit: 10 },
+    { userId: userId ?? "", offset: 0, limit: 3 },
     { skip: !userId || !isAuthenticated }
   );
   const { data: transactionsData, refetch: refetchTransactions } =
     useGetTransactionsQuery(
-      { userId: userId ?? "", offset: 0, limit: 10 },
+      { userId: userId ?? "", offset: 0, limit: 7 },
       { skip: !userId || !isAuthenticated }
     ) as {
       data: GetTransactionsResponse | undefined;
@@ -208,7 +208,7 @@ export default function PlaidLink() {
   return (
     <div className="p-2">
       <Button
-        className="w-full mt-4 bg-black rounded text-white hover:bg-gray-800 transition-all duration-300 ease-in-out"
+        className="w-full mt-4 bg-neutral-950 rounded text-white hover:bg-neutral-800 transition-all duration-300 ease-in-out"
         onClick={() => open()}
         disabled={!ready || isLinkLoading || isExchanging}
       >

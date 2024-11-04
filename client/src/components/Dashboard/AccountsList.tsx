@@ -6,9 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 const AccountsList = ({ accounts }: any) => {
   return (
     <Card className="">
-      <CardHeader className="bg-blue-50 rounded-t-lg p-4">
+      <CardHeader className="bg-gray-100 rounded-t-lg p-4">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-semibold text-blue-800">
+          <CardTitle className="text-xl font-bold text-neutral-800">
             Connected Accounts
           </CardTitle>
           <Link href="/accounts" className="text-gray-500 hover:underline">

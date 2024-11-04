@@ -41,6 +41,7 @@ interface Transaction {
   name: string;
   createdAt: string;
   updatedAt: string;
+  category: { primary: string };
 }
 
 export default function Transactions() {

@@ -23,7 +23,7 @@ const Sidebar = () => {
     <div
       className={`w-${
         isOpen ? "64" : "16"
-      } bg-white border-r p-4 transition-all duration-300 h-screen flex flex-col`}
+      } bg-white border-r p-4 transition-all duration-300 min-h-screen flex flex-col`}
     >
       {/* Encabezado del Sidebar */}
       <div className="flex justify-between items-center mb-4">
