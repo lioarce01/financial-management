@@ -111,6 +111,9 @@ const getTransactions = async (
       where: { userId },
       skip: offset,
       take: limit,
+      include: {
+        category: true,
+      },
     }),
     prisma.transaction.count({
       where: { userId },

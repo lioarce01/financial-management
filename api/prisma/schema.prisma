@@ -27,7 +27,7 @@ model User {
 
 model Account {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  plaidAccountId String        @unique  
+  plaidAccountId String        @unique
   userId         String        @db.ObjectId
   mask           String
   name           String
@@ -41,21 +41,29 @@ model Account {
 }
 
 model Transaction {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  plaidTransactionId String   @unique
-  accountId         String   @db.ObjectId
-  userId            String   @db.ObjectId
-  amount            Float
-  iso_currency_code String?
-  date              DateTime
-  name              String
-  merchant_name     String?
-  pending           Boolean
-  payment_channel   String?
-  transaction_type  String?
-  logo_url          String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  account           Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  plaidTransactionId String     @unique
+  accountId          String     @db.ObjectId
+  userId             String     @db.ObjectId
+  amount             Float
+  iso_currency_code  String?
+  date               DateTime
+  name               String
+  merchant_name      String?
+  pending            Boolean
+  payment_channel    String?
+  transaction_type   String?
+  logo_url           String?
+  categoryId         String? @db.ObjectId
+  category           Category? @relation("TransactionCategory",fields: [categoryId], references: [id])
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  account            Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  primary         String?
+  transactions Transaction[]  @relation("TransactionCategory")
 }
