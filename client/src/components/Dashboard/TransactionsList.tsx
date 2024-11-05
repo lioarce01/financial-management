@@ -9,7 +9,7 @@ import { TableCell, TableRow } from "../ui/table";
 const TransactionsList = ({ transactions }: any) => {
   return (
     <Card className="w-full">
-      <CardHeader className="bg-gray-100 rounded-t-lg p-4">
+      <CardHeader className="bg-gray-150 rounded-t-lg p-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-neutral-800">
             Transaction History

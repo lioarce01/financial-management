@@ -9,10 +9,8 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      {" "}
-      {/* Adjusted margin */}
       {/* Total Balance */}
-      <Card className="bg-gray-100">
+      <Card className="bg-gray-50">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-medium">Total Balance</CardTitle>
           <DollarSign className="h-6 w-6 text-muted-foreground" />
@@ -41,7 +39,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
         </CardContent>
       </Card>
       {/* Monthly Income */}
-      <Card className="bg-gray-100">
+      <Card className="bg-gray-50">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-medium">Monthly Income</CardTitle>
           <TrendingUp className="h-6 w-6 text-muted-foreground" />
@@ -72,7 +70,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
         </CardContent>
       </Card>
       {/* Monthly Spent */}
-      <Card className="bg-gray-100">
+      <Card className="bg-gray-50">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg font-medium">Monthly Spent</CardTitle>
           <ArrowUpDown className="h-6 w-6 text-muted-foreground" />

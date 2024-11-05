@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 const AccountsList = ({ accounts }: any) => {
   return (
     <Card>
-      <CardHeader className="bg-gray-100 rounded-t-lg p-4">
+      <CardHeader className="bg-gray-150 rounded-t-lg p-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg md:text-xl font-bold text-neutral-800">
             Connected Accounts
@@ -25,7 +25,7 @@ const AccountsList = ({ accounts }: any) => {
               accounts.map((account: any) => (
                 <div
                   key={account.id}
-                  className="p-4 border rounded-lg shadow-md bg-white hover:bg-gray-50 transition-all duration-300 ease-in-out"
+                  className="p-4 border rounded bg-white hover:bg-gray-100 transition-all duration-300 ease-in-out"
                 >
                   <div className="flex justify-between items-center">
                     <div className="font-semibold text-lg text-gray-800">

@@ -22,7 +22,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`fixed inset-0 bg-white border-r p-4 transition-all duration-300 flex flex-col z-10 ${
+      className={`fixed inset-0 bg-gray-50 border-r p-4 transition-all duration-300 flex flex-col z-10 ${
         isOpen ? "" : "w-16"
       } ${isOpen ? "w-full md:w-64" : "w-16"} h-full overflow-hidden`}
     >

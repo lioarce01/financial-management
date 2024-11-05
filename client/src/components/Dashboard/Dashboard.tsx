@@ -96,7 +96,7 @@ const DashboardPage = () => {
     })) || [];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Main Content */}
       <div className="flex-1 p-4 md:p-8">
         <div className="flex justify-between items-center mb-4 md:mb-6">
@@ -114,7 +114,7 @@ const DashboardPage = () => {
             monthlySpent={formatAmount(monthlySpentOverview)}
             monthlyIncome={formatAmount(monthlyIncomeOverview)}
           />
-          <div className="bg-gray-100 p-4 md:p-6 shadow rounded-lg mb-4 md:mb-6">
+          <div className="bg-gray-50 p-4 md:p-6 shadow rounded-lg mb-4 md:mb-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4">
               Transaction Categories
             </h2>
