@@ -21,3 +21,33 @@ export function formatDate(date: string) {
     day: "numeric",
   });
 }
+
+export const totalAccountsBalance = (accounts: any[]) => {
+  const total = accounts.reduce((acc, account) => acc + account.balance, 0);
+
+  return total;
+};
+
+export const monthlySpent = (transactions: any[]) => {
+  const res = Math.abs(
+    transactions?.reduce(
+      (acc, transaction) =>
+        acc + (transaction.amount < 0 ? transaction.amount : 0),
+      0
+    ) || 0
+  );
+
+  return res;
+};
+
+export const monthlyIncome = (transactions: any[]) => {
+  const res = Math.abs(
+    transactions?.reduce(
+      (acc, transaction) =>
+        acc + (transaction.amount > 0 ? transaction.amount : 0),
+      0
+    ) || 0
+  );
+
+  return res;
+};

@@ -1,4 +1,3 @@
-// DashboardPage.tsx
 "use client";
 
 import React, { useEffect } from "react";
@@ -11,7 +10,12 @@ import {
 } from "@/app/redux/api/user";
 import TransactionsList from "./TransactionsList";
 import MontlyOverview from "./MontlyOverview";
-import { formatAmount } from "@/lib/utils";
+import {
+  formatAmount,
+  monthlyIncome,
+  monthlySpent,
+  totalAccountsBalance,
+} from "@/lib/utils";
 import { AppDispatch, RootState } from "@/app/redux/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setTransaction } from "@/app/redux/slices/transactionSlice";
@@ -32,22 +36,14 @@ const DashboardPage = () => {
   const userId = dbUser?.id;
 
   const { data: dbAccounts } = useGetAccountsQuery(
-    {
-      offset: 0,
-      limit: 3,
-      userId,
-    },
+    { userId },
     {
       skip: !userId || !isAuthenticated,
     }
   );
 
   const { data: dbTransactions } = useGetTransactionsQuery(
-    {
-      offset: 0,
-      limit: 7,
-      userId,
-    },
+    { userId },
     {
       skip: !userId || !isAuthenticated,
     }
@@ -62,26 +58,11 @@ const DashboardPage = () => {
     }
   }, [dbTransactions, dbAccounts, dispatch]);
 
-  const totalBalance = accounts?.reduce(
-    (acc, account) => acc + account.balance,
-    0
-  );
+  const totalBalance = totalAccountsBalance(accounts);
 
-  const monthlySpent = Math.abs(
-    transactions?.reduce(
-      (acc, transaction) =>
-        acc + (transaction.amount < 0 ? transaction.amount : 0),
-      0
-    )
-  );
+  const monthlySpentOverview = monthlySpent(transactions);
 
-  const monthlyIncome = Math.abs(
-    transactions?.reduce(
-      (acc, transaction) =>
-        acc + (transaction.amount > 0 ? transaction.amount : 0),
-      0
-    )
-  );
+  const monthlyIncomeOverview = monthlyIncome(transactions);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -99,17 +80,19 @@ const DashboardPage = () => {
         {/* Monthly Overview */}
         <MontlyOverview
           totalBalance={formatAmount(totalBalance)}
-          monthlySpent={formatAmount(monthlySpent)}
-          monthlyIncome={formatAmount(monthlyIncome)}
+          monthlySpent={formatAmount(monthlySpentOverview)}
+          monthlyIncome={formatAmount(monthlyIncomeOverview)}
         />
 
         {/* Accounts and Spending Overview */}
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Accounts List */}
-          {isAuthenticated && <AccountsList accounts={accounts} />}
+          {isAuthenticated && <AccountsList accounts={accounts.slice(0, 3)} />}
 
           {/* Transaction History Overview */}
-          {isAuthenticated && <TransactionsList transactions={transactions} />}
+          {isAuthenticated && (
+            <TransactionsList transactions={transactions.slice(0, 7)} />
+          )}
         </div>
       </div>
     </div>

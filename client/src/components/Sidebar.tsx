@@ -4,6 +4,7 @@ import {
   WalletCards,
   ArrowRightFromLine,
   ArrowLeftFromLine,
+  BadgeDollarSign,
 } from "lucide-react";
 import React, { useState } from "react";
 import PlaidLink from "./PlaidLink";
@@ -42,7 +43,7 @@ const Sidebar = () => {
         </button>
       </div>
 
-      {/* Navegación */}
+      {/* Navegacion */}
       <nav className="space-y-2 flex-grow">
         <Link
           href="/dashboard"
@@ -71,10 +72,18 @@ const Sidebar = () => {
           <Landmark className="h-5 w-5" />
           {isOpen && <span>Accounts</span>}
         </Link>
+        <Link
+          href="/holdings"
+          className={`flex items-center space-x-2 text-sm w-full p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/holdings" ? "bg-blue-100" : "hover:bg-gray-100"
+          }`}
+        >
+          <BadgeDollarSign className="h-5 w-5" />
+          {isOpen && <span>Holdings</span>}
+        </Link>
         {isOpen && <PlaidLink />}
       </nav>
 
-      {/* UserMenu y AuthButtons en la parte inferior */}
       <div className="mt-auto space-y-2">{isOpen && <UserMenu />}</div>
     </div>
   );

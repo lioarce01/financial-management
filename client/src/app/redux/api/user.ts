@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface getTransactionsArgs {
-  offset: number;
-  limit: number;
+  offset?: number;
+  limit?: number;
   userId: string;
 }
 
@@ -12,8 +12,8 @@ interface GetTransactionsResponse {
 }
 
 interface GetAccountsArgs {
-  offset: number;
-  limit: number;
+  offset?: number;
+  limit?: number;
   userId: string;
 }
 
@@ -22,10 +22,21 @@ interface GetAccountsResponse {
   count: number;
 }
 
+interface GetHoldingsArgs {
+  offset?: number;
+  limit?: number;
+  userId: string;
+}
+
+interface GetHoldingsResponse {
+  results: any[];
+  count: number;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:4000/" }),
-  tagTypes: ["Accounts", "Transactions", "User"],
+  tagTypes: ["Accounts", "Transactions", "User", "Holdings"],
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => "users",
@@ -56,18 +67,47 @@ export const userApi = createApi({
         method: "PUT",
       }),
     }),
+
     getAccounts: builder.query<GetAccountsResponse, GetAccountsArgs>({
-      query: ({ offset = 0, limit = 10, userId }) =>
-        `users/accounts/${userId}?offset=${offset}&limit=${limit}`,
+      query: ({ offset, limit, userId }) => {
+        let queryParams = `users/accounts/${userId}`;
+        if (offset !== undefined || limit !== undefined) {
+          queryParams += `?${offset !== undefined ? `offset=${offset}&` : ""}${
+            limit !== undefined ? `limit=${limit}` : ""
+          }`;
+        }
+        return queryParams;
+      },
       providesTags: ["Accounts"],
     }),
+
     getTransactions: builder.query<
       GetTransactionsResponse,
       getTransactionsArgs
     >({
-      query: ({ offset = 0, limit = 10, userId }) =>
-        `users/transactions/${userId}?offset=${offset}&limit=${limit}`,
+      query: ({ offset, limit, userId }) => {
+        let queryParams = `users/transactions/${userId}`;
+        if (offset !== undefined || limit !== undefined) {
+          queryParams += `?${offset !== undefined ? `offset=${offset}&` : ""}${
+            limit !== undefined ? `limit=${limit}` : ""
+          }`;
+        }
+        return queryParams;
+      },
       providesTags: ["Transactions"],
+    }),
+
+    getAllHoldings: builder.query<GetHoldingsResponse, GetHoldingsArgs>({
+      query: ({ offset, limit, userId }) => {
+        let queryParams = `users/accounts/holdings/${userId}`;
+        if (offset !== undefined || limit !== undefined) {
+          queryParams += `?${offset !== undefined ? `offset=${offset}&` : ""}${
+            limit !== undefined ? `limit=${limit}` : ""
+          }`;
+        }
+        return queryParams;
+      },
+      providesTags: ["Holdings"],
     }),
   }),
 });
@@ -80,4 +120,5 @@ export const {
   useUpdateUserMutation,
   useGetAccountsQuery,
   useGetTransactionsQuery,
+  useGetAllHoldingsQuery,
 } = userApi;
