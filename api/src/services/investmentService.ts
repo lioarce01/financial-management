@@ -64,3 +64,33 @@ export const fetchAndSaveHoldings = async (
 
   return holdingsResponse.data.holdings;
 };
+
+export const getHoldings = async (
+  userId: string,
+  offset?: number,
+  limit?: number
+) => {
+  if (!userId || typeof userId !== "string" || userId.length !== 24) {
+    throw new Error("Invalid user ID");
+  }
+
+  const holdingsQuery = {
+    where: {
+      account: {
+        userId,
+        type: "investment",
+      },
+    },
+    ...(offset !== undefined && { skip: offset }),
+    ...(limit !== undefined && { take: limit }),
+  };
+
+  const [holdings, totalCount] = await Promise.all([
+    prisma.holdings.findMany(holdingsQuery),
+    prisma.holdings.count({
+      where: holdingsQuery.where,
+    }),
+  ]);
+
+  return { results: holdings, count: totalCount };
+};
