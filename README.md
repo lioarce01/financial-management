@@ -11,7 +11,7 @@ Socket.IO: Escucha eventos del backend y actualiza la vista del usuario o muestr
 
 ### Backend
 
-Node.js con ExpressJS, Prisma, Typescript, PostgreSQL, Redis, RabbitMQ y Helmet.
+Node.js con ExpressJS, Prisma, Typescript, PostgreSQL, Helmet.
 Socket.IO: Emite eventos de actualización de saldo o nuevas transacciones al frontend cada vez que el backend recibe nuevos datos desde la API bancaria o el sistema de cuentas.
 
 ### Arquitectura de Microservicios:
@@ -39,13 +39,4 @@ Base de Datos
 
 ### PostgreSQL
 
-Base de datos relacional para almacenar los datos principales (transacciones, cuentas, historial de usuarios).
-
-### Redis
-
-Para caché y almacenamiento temporal de datos frecuentemente solicitados, mejorando la velocidad de respuesta.
-Colas y Mensajería
-
-### RabbitMQ
-
-Manejar procesamiento en cola y asegurar la integridad de las transacciones. Manejar los procesos que requieren sincronización, como el registro de transacciones en tiempo real.
+Base de datos NoSQL para almacenar los datos principales (transacciones, cuentas, historial de usuarios).
