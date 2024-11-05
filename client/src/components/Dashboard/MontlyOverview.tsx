@@ -8,7 +8,9 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
   const [showMonthlySpent, setShowMonthlySpent] = useState(true);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      {" "}
+      {/* Adjusted margin */}
       {/* Total Balance */}
       <Card className="bg-gray-100">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -17,7 +19,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
         </CardHeader>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
-            <div className="flex space-x-4">
+            <div className="flex space-x-2">
               <div className="text-2xl font-bold">
                 {showTotalBalance
                   ? `${totalBalance?.toLocaleString()}`
@@ -38,7 +40,6 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
           </div>
         </CardContent>
       </Card>
-
       {/* Monthly Income */}
       <Card className="bg-gray-100">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -47,7 +48,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
         </CardHeader>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
-            <div className="flex space-x-4">
+            <div className="flex space-x-2">
               <div className="text-2xl font-bold">
                 {showMonthlyIncome
                   ? `${monthlyIncome?.toLocaleString()}`
@@ -70,7 +71,6 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
           </div>
         </CardContent>
       </Card>
-
       {/* Monthly Spent */}
       <Card className="bg-gray-100">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -79,7 +79,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
         </CardHeader>
         <CardContent className="flex justify-between items-center">
           <div className="flex flex-col">
-            <div className="flex space-x-4">
+            <div className="flex space-x-2">
               <div className="text-2xl font-bold">
                 {showMonthlySpent ? `${monthlySpent}` : "******"}
               </div>
@@ -95,7 +95,7 @@ const MontlyOverview = ({ monthlySpent, monthlyIncome, totalBalance }: any) => {
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
-              +12% from last month
+              -15% from last month
             </p>
           </div>
         </CardContent>

@@ -8,7 +8,7 @@ import { TableCell, TableRow } from "../ui/table";
 
 const TransactionsList = ({ transactions }: any) => {
   return (
-    <Card className="">
+    <Card className="w-full">
       <CardHeader className="bg-gray-100 rounded-t-lg p-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-neutral-800">
@@ -20,12 +20,16 @@ const TransactionsList = ({ transactions }: any) => {
         </div>
       </CardHeader>
       <CardContent className="p-6 bg-gray-50 rounded-b-lg">
-        <div className="overflow-auto">
+        <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead className="bg-gray-100 text-gray-700 text-sm">
               <tr>
-                <th className="py-3 px-4 border-b font-medium">Date</th>
-                <th className="py-3 px-4 border-b font-medium">Description</th>
+                <th className="hidden md:table-cell py-3 px-4 border-b font-medium text-left">
+                  Date
+                </th>
+                <th className="py-3 px-4 border-b font-medium text-left">
+                  Description
+                </th>
                 <th className="py-3 px-4 border-b font-medium text-right">
                   Amount
                 </th>
@@ -38,13 +42,13 @@ const TransactionsList = ({ transactions }: any) => {
                     key={transaction.id}
                     className="hover:bg-gray-50 transition-colors duration-150"
                   >
-                    <td className="py-3 px-4 border-b text-gray-600">
+                    <td className="hidden md:table-cell py-3 px-4 border-b text-gray-600">
                       {formatDate(transaction.date)}
                     </td>
                     <td className="py-3 px-4 border-b text-gray-600">
                       {transaction.name}
                     </td>
-                    <td className="py-3 px-4 border-b text-right ">
+                    <td className="py-3 px-4 border-b text-right">
                       {transaction.amount < 0 ? (
                         <span className="text-red-500 font-medium">
                           -${Math.abs(transaction.amount).toFixed(2)}

@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 const AccountsList = ({ accounts }: any) => {
   return (
-    <Card className="">
+    <Card>
       <CardHeader className="bg-gray-100 rounded-t-lg p-4">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-bold text-neutral-800">
+          <CardTitle className="text-lg md:text-xl font-bold text-neutral-800">
             Connected Accounts
           </CardTitle>
           <Link href="/accounts" className="text-gray-500 hover:underline">
@@ -16,7 +16,9 @@ const AccountsList = ({ accounts }: any) => {
           </Link>
         </div>
       </CardHeader>
-      <CardContent className="p-6 bg-gray-50 rounded-b-lg">
+      <CardContent className="p-4 md:p-6 bg-gray-50 rounded-b-lg">
+        {" "}
+        {/* Responsive padding */}
         <div className="space-y-4">
           <div className="grid gap-4">
             {accounts?.length > 0 ? (

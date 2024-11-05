@@ -33,6 +33,17 @@ interface GetHoldingsResponse {
   count: number;
 }
 
+export interface CategoryCount {
+  categoryName: string | null;
+  transactionCount: number;
+}
+
+export type GetCategoryCounterResponse = CategoryCount[];
+
+export interface GetCategoryCounterArgs {
+  userId: string;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:4000/" }),
@@ -109,6 +120,10 @@ export const userApi = createApi({
       },
       providesTags: ["Holdings"],
     }),
+
+    getCategoryCounter: builder.query<CategoryCount[], GetCategoryCounterArgs>({
+      query: ({ userId }) => `users/transactions/categories/${userId}`,
+    }),
   }),
 });
 
@@ -121,4 +136,5 @@ export const {
   useGetAccountsQuery,
   useGetTransactionsQuery,
   useGetAllHoldingsQuery,
+  useGetCategoryCounterQuery,
 } = userApi;

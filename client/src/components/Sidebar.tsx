@@ -22,9 +22,9 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`w-${
-        isOpen ? "64" : "16"
-      } bg-white border-r p-4 transition-all duration-300 min-h-screen flex flex-col`}
+      className={`fixed inset-0 bg-white border-r p-4 transition-all duration-300 flex flex-col z-10 ${
+        isOpen ? "" : "w-16"
+      } ${isOpen ? "w-full md:w-64" : "w-16"} h-full overflow-hidden`}
     >
       {/* Encabezado del Sidebar */}
       <div className="flex justify-between items-center mb-4">
@@ -44,7 +44,7 @@ const Sidebar = () => {
       </div>
 
       {/* Navegacion */}
-      <nav className="space-y-2 flex-grow">
+      <nav className="flex-grow overflow-auto space-y-2">
         <Link
           href="/dashboard"
           className={`flex items-center space-x-2 text-sm w-full p-2 rounded-lg transition-colors duration-200 ${
