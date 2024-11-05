@@ -26,7 +26,7 @@ manejo de autenticación y autorización.
 
 ### Transacciones:
 
-procesar y registrar transacciones (implementable en una segunda fase), utilizando colas de mensajes como RabbitMQ para garantizar procesamiento seguro.
+procesar y registrar transacciones (implementable en una segunda fase).
 
 ### Cuentas Bancarias y Gastos:
 
