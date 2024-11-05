@@ -148,6 +148,41 @@ const getAccounts = async (userId: string, offset?: number, limit?: number) => {
   return { results: accounts, count: totalCount };
 };
 
+interface CategoryCount {
+  categoryName: string | null;
+  transactionCount: number;
+}
+
+export const getTransactionCountByCategory = async (
+  userId: string
+): Promise<CategoryCount[]> => {
+  if (!userId || typeof userId !== "string" || userId.length !== 24) {
+    throw new Error("Invalid user ID");
+  }
+
+  const { results: transactions } = await getTransactions(userId);
+
+  const categoryCounts: Record<string, number> = {};
+
+  transactions.forEach((transaction) => {
+    const categoryName = transaction.category?.primary ?? null;
+    const key = categoryName ?? "Uncategorized";
+
+    categoryCounts[key] = (categoryCounts[key] || 0) + 1;
+  });
+
+  const results: CategoryCount[] = Object.entries(categoryCounts).map(
+    ([categoryName, count]) => ({
+      categoryName: categoryName === "Uncategorized" ? null : categoryName,
+      transactionCount: count,
+    })
+  );
+
+  results.sort((a, b) => b.transactionCount - a.transactionCount);
+
+  return results;
+};
+
 export {
   getAllUsers,
   getUserById,

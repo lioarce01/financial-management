@@ -7,6 +7,7 @@ import {
   updateUser,
   getTransactions,
   getAccounts,
+  getTransactionCountByCategory,
 } from "../services/userService";
 
 export const getAllUsersController = async (req: Request, res: Response) => {
@@ -132,5 +133,26 @@ export const getTransactionsController = async (
   } catch (error) {
     console.error("Error fetching transactions:", error);
     return res.status(500).json({ message: "Internal server error  " });
+  }
+};
+
+export const getTransactionCategoryCounts = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      res.status(400).json({ error: "User ID is required" });
+      return;
+    }
+
+    const categoryCounts = await getTransactionCountByCategory(userId);
+
+    res.status(200).json(categoryCounts);
+  } catch (error) {
+    console.error("Error in getTransactionCategoryCounts:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

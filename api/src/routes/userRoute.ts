@@ -7,6 +7,7 @@ import {
   createUserController,
   getTransactionsController,
   getAccountsController,
+  getTransactionCategoryCounts,
 } from "../controllers/userController";
 import { getAllHoldings } from "../controllers/account.controller";
 
@@ -20,5 +21,6 @@ router.put("/:id", updateUserController);
 router.get("/transactions/:userId", getTransactionsController);
 router.get("/accounts/:userId", getAccountsController);
 router.get("/accounts/holdings/:accountId", getAllHoldings);
+router.get("/transactions/categories/:userId", getTransactionCategoryCounts);
 
 export default router;
