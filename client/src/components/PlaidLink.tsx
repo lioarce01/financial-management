@@ -22,9 +22,9 @@ import {
 } from "@/app/redux/slices/plaidSlice";
 import { setUser } from "@/app/redux/slices/userSlice";
 import { setTransaction } from "@/app/redux/slices/transactionSlice";
-import AuthButtons from "./AuthButtons";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { Button } from "./ui/button";
+import LoginButton from "./LoginButton";
 
 interface GetTransactionsResponse {
   results: any[];
@@ -186,7 +186,7 @@ export default function PlaidLink() {
     return (
       <div className="text-center">
         <h1>You need to log in to connect your bank account</h1>
-        <AuthButtons />
+        <LoginButton />
       </div>
     );
   }

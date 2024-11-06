@@ -1,20 +1,23 @@
-import React, { useState } from "react";
-import { User, ChevronDown, ChevronUp } from "lucide-react";
+import React from "react";
+import { User, Ellipsis } from "lucide-react";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import Spinner from "./Spinner";
-import AuthButtons from "./AuthButtons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import LogoutButton from "./LogoutButton";
 
-const UserMenu = ({ position = "bottom" }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const UserMenu = () => {
   const {
     data: user,
     isLoading: isUserLoading,
     isAuthenticated,
   } = useFetchUser();
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
 
   return (
     <div className="relative">
@@ -22,43 +25,31 @@ const UserMenu = ({ position = "bottom" }) => {
         <Spinner />
       ) : (
         isAuthenticated && (
-          <div>
-            <div
-              className="flex space-x-3 justify-between items-center cursor-pointer"
-              onClick={toggleDropdown}
-            >
-              <div className="flex flex-col">
-                <p className="text-sm font-semibold">{user?.name}</p>
-                <p className="text-xs text-gray-400">{user?.email}</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex space-x-3 items-center cursor-pointer">
+                <div className="bg-gray-200 rounded-full p-2">
+                  <User className="h-6 w-6 text-black" />
+                </div>
+                <Ellipsis className="h-5 w-5 text-neutral-600 hover:text-neutral-400 transition-all duration-300" />
               </div>
-              <div className="bg-gray-200 rounded-full p-2">
-                <User className="h-6 w-6 text-black" />
-              </div>
-              <div>
-                {isDropdownOpen ? (
-                  <ChevronUp className="h-5 w-5 text-black hover:bg-gray-100" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-black hover:bg-gray-100" />
-                )}
-              </div>
-            </div>
-
-            {isDropdownOpen && (
-              <div
-                className={`absolute ${
-                  position === "bottom" ? "bottom-12" : "top-12"
-                } right-0 w-48 bg-white border rounded-lg shadow-lg z-10 p-2 space-y-2`}
-              >
-                <a
-                  href="/profile"
-                  className="block p-2 text-sm font-semibold hover:bg-gray-100 transition-all duration-300"
-                >
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-gray-50">
+              <DropdownMenuItem>
+                <div className="flex flex-col">
+                  <p className="text-sm font-semibold">{user?.name}</p>
+                  <p className="text-xs text-gray-400">{user?.email}</p>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link className="w-full" href="/profile">
                   Profile
-                </a>
-                <AuthButtons />
-              </div>
-            )}
-          </div>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <LogoutButton />
+            </DropdownMenuContent>
+          </DropdownMenu>
         )
       )}
     </div>

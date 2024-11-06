@@ -28,9 +28,9 @@ const Sidebar = () => {
     >
       {/* Encabezado del Sidebar */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className={`text-xl font-bold ${isOpen ? "" : "hidden"}`}>
+        <a href="/" className={`text-xl font-bold ${isOpen ? "" : "hidden"}`}>
           Bankly Hub
-        </h2>
+        </a>
         <button
           className="p-2 hover:bg-gray-100 rounded transition-all duration-300"
           onClick={handleClose}
