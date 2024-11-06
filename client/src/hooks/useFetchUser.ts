@@ -17,20 +17,19 @@ export function useFetchUser() {
   const auth0Id = auth0User?.email || "";
   const [hasAttemptedUserCreation, setHasAttemptedUserCreation] =
     useState(false);
-  const [isUserCreated, setIsUserCreated] = useState(false); // New state to track user creation
+  const [isUserCreated, setIsUserCreated] = useState(false);
 
   const {
     data: dbUser,
     isLoading: isDbLoading,
     error: dbError,
-    refetch: refetchUser, // Get refetch function
+    refetch: refetchUser,
   } = useGetUserByIdQuery(auth0Id, {
     skip: !auth0Id || !isAuthenticated,
   });
 
   useEffect(() => {
     const createUserIfNotExists = async () => {
-      // Check if the user is authenticated and if the user does not exist in the database
       if (
         isAuthenticated &&
         !dbUser &&
@@ -49,8 +48,8 @@ export function useFetchUser() {
             email: auth0User.email,
             auth0Id,
           });
-          setHasAttemptedUserCreation(true); // Mark that user creation has been attempted
-          setIsUserCreated(true); // Mark that the user was created
+          setHasAttemptedUserCreation(true);
+          setIsUserCreated(true);
         } catch (error) {
           console.error("Error creating user:", error);
         }
@@ -67,11 +66,10 @@ export function useFetchUser() {
     hasAttemptedUserCreation,
   ]);
 
-  // Refetch user data after the user is created
   useEffect(() => {
     if (isUserCreated) {
-      refetchUser(); // Refetch the user data after creation
-      setIsUserCreated(false); // Reset the creation flag
+      refetchUser();
+      setIsUserCreated(false);
     }
   }, [isUserCreated, refetchUser]);
 

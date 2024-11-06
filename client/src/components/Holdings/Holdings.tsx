@@ -66,6 +66,10 @@ export default function AccountHoldings() {
   const { data: allHoldings, isLoading: isAllHoldingsLoading } =
     useGetAllHoldingsQuery({ userId }, { skip: !userId || !isAuthenticated });
 
+  const searchTerm = useSelector(
+    (state: RootState) => state.filterState.searchTerm
+  );
+
   const [selectedHolding, setSelectedHolding] = useState<Holding | null>(null);
   const dispatch = useDispatch();
 
@@ -154,14 +158,6 @@ export default function AccountHoldings() {
               <CardTitle className="text-xl sm:text-2xl font-bold text-neutral-800">
                 Holdings Summary
               </CardTitle>
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search holdings..."
-                  className="pl-10 bg-white w-full"
-                />
-              </div>
             </div>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 bg-white rounded-b-lg">

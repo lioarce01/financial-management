@@ -23,7 +23,10 @@ import {
   setCurrentPage,
   setItemsPerPage,
   setTransaction,
+  transactionSlice,
 } from "@/app/redux/slices/transactionSlice";
+import { setSearchTerm } from "@/app/redux/slices/filterSlice";
+import Searcher from "../Searcher";
 
 interface Transaction {
   id: string;
@@ -48,6 +51,10 @@ export default function Transactions() {
   const { transactions, totalCount, currentPage, itemsPerPage } = useSelector(
     (state: RootState) => state.transactionState
   );
+  const searchTerm = useSelector(
+    (state: RootState) => state.filterState.searchTerm
+  );
+
   const {
     data: dbUser,
     isLoading: isUserLoading,
@@ -58,8 +65,6 @@ export default function Transactions() {
 
   const { data, isLoading } = useGetTransactionsQuery(
     {
-      offset: (currentPage - 1) * itemsPerPage,
-      limit: itemsPerPage,
       userId,
     },
     {
@@ -68,16 +73,8 @@ export default function Transactions() {
   );
   const dispatch = useDispatch();
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
-
-  const filteredTransactions = transactions?.filter((transaction: any) => {
-    const matchesSearch =
-      transaction.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.amount.toString().includes(searchTerm);
-    return matchesSearch;
-  });
 
   const handleTransactionClick = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
@@ -98,6 +95,17 @@ export default function Transactions() {
     }
   }, [data, dispatch, currentPage]);
 
+  const filteredTransactions = transactions.filter((transaction) =>
+    transaction.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalFilteredCount = filteredTransactions.length;
+
   return (
     <div className="flex-1 overflow-hidden pl-16 md:pl-20">
       <div className="h-full overflow-y-auto px-4 py-6 lg:px-8">
@@ -111,14 +119,7 @@ export default function Transactions() {
               </CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search transactions..."
-                    className="pl-10 bg-white w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                  <Searcher />
                 </div>
               </div>
             </div>
@@ -138,8 +139,8 @@ export default function Transactions() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTransactions && !isLoading ? (
-                      filteredTransactions.map((transaction) => (
+                    {paginatedTransactions && !isLoading ? (
+                      paginatedTransactions.map((transaction) => (
                         <TableRow
                           key={transaction.id}
                           onClick={() => handleTransactionClick(transaction)}
@@ -190,7 +191,7 @@ export default function Transactions() {
             </div>
             <Pagination
               currentPage={currentPage}
-              totalPages={Math.ceil(totalCount / itemsPerPage)}
+              totalPages={Math.ceil(totalFilteredCount / itemsPerPage)}
               onPageChange={handlePageChange}
               itemsPerPage={itemsPerPage}
               setItemsPerPage={(value) => dispatch(setItemsPerPage(value))}

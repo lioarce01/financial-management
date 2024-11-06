@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,7 +14,6 @@ import { useGetAccountsQuery } from "@/app/redux/api/user";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import { formatAmount } from "@/lib/utils";
 import AccountDetail from "./AccountDetail";
-import { Search } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/redux/store/store";
 import {
@@ -24,6 +22,7 @@ import {
   setAccounts,
 } from "@/app/redux/slices/accountSlice";
 import Pagination from "../Pagination";
+import Searcher from "../Searcher";
 
 interface Account {
   id: string;
@@ -42,33 +41,28 @@ export default function Accounts() {
   const { accounts, totalCount, currentPage, itemsPerPage } = useSelector(
     (state: RootState) => state.accountState
   );
+  const searchTerm = useSelector(
+    (state: RootState) => state.filterState.searchTerm
+  );
   const {
     data: dbUser,
     isLoading: isUserLoading,
     isAuthenticated,
   } = useFetchUser();
   const userId = dbUser?.id;
+
   const { data, isLoading } = useGetAccountsQuery(
     {
-      offset: (currentPage - 1) * itemsPerPage,
-      limit: itemsPerPage,
       userId,
     },
     {
       skip: !userId || !isAuthenticated,
     }
   );
+
   const dispatch = useDispatch();
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const filteredAccounts = accounts?.filter((account) => {
-    const matchesSearch =
-      account.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account.officialName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account.mask.includes(searchTerm);
-    return matchesSearch;
-  });
 
   const handleAccountClick = (account: Account) => {
     setSelectedAccount(account);
@@ -87,7 +81,18 @@ export default function Accounts() {
       dispatch(setAccounts(data.results));
       dispatch({ type: "accounts/setTotalCount", payload: data.count });
     }
-  }, [data, dispatch, currentPage]);
+  }, [data, dispatch]);
+
+  const filteredAccounts = accounts.filter((account) =>
+    account.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const paginatedAccounts = filteredAccounts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalFilteredCount = filteredAccounts.length;
 
   return (
     <div className="flex-1 overflow-hidden pl-16 md:-pl20">
@@ -102,14 +107,7 @@ export default function Accounts() {
               </CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search accounts..."
-                    className="pl-10 bg-white w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                  <Searcher />
                 </div>
               </div>
             </div>
@@ -127,8 +125,8 @@ export default function Accounts() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredAccounts && !isLoading ? (
-                      filteredAccounts.map((account) => (
+                    {paginatedAccounts.length ? (
+                      paginatedAccounts.map((account) => (
                         <TableRow
                           key={account.id}
                           onClick={() => handleAccountClick(account)}
@@ -163,7 +161,7 @@ export default function Accounts() {
             </div>
             <Pagination
               currentPage={currentPage}
-              totalPages={Math.ceil(totalCount / itemsPerPage)}
+              totalPages={Math.ceil(totalFilteredCount / itemsPerPage)}
               onPageChange={handlePageChange}
               itemsPerPage={itemsPerPage}
               setItemsPerPage={(value) => dispatch(setItemsPerPage(value))}

@@ -8,6 +8,7 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import transactionReducer from "../slices/transactionSlice";
 import accountsReducer from "../slices/accountSlice";
 import holdingReducer from "../slices/holdingSlice";
+import filterReducer from "../slices/filterSlice";
 
 const createNoopStorage = () => {
   return {
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   transactionState: transactionReducer,
   accountState: accountsReducer,
   holdingState: holdingReducer,
+  filterState: filterReducer,
 });
 
 const localStorage = persistReducer(persistConfig, rootReducer);
