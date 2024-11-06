@@ -169,14 +169,14 @@ export default function PlaidLink() {
     initializationAttempted,
   ]);
 
-  useEffect(() => {
-    if (accountsData) {
-      dispatch(setAccounts(accountsData.results));
-    }
-    if (transactionsData) {
-      dispatch(setTransaction(transactionsData.results));
-    }
-  }, [accountsData, transactionsData, dispatch]);
+  // useEffect(() => {
+  //   if (accountsData) {
+  //     dispatch(setAccounts(accountsData.results));
+  //   }
+  //   if (transactionsData) {
+  //     dispatch(setTransaction(transactionsData.results));
+  //   }
+  // }, [accountsData, transactionsData, dispatch]);
 
   if (isUserLoading) {
     return <div>Loading...</div>;
@@ -197,7 +197,7 @@ export default function PlaidLink() {
         <p>{linkError || exchangeError}</p>
         <button
           onClick={generateToken}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="mt-4 px-4 py-2 bg-neutral-950 text-white rounded hover:bg-neutral-800"
         >
           Try Again
         </button>

@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="min-w-full flex items-center justify-between font-semibold p-4 shadow-md bg-[#0a0a0a] backdrop-blur-md text-gray-50">
+    <nav className="fixed min-w-full flex items-center justify-between font-semibold p-4 bg-[#0c0c0c] bg-opacity-50 backdrop-blur-md text-gray-50">
       <div className="flex flex-row space-x-2">
         <h1 className="text-2xl font-bold">BANKLY</h1>
       </div>

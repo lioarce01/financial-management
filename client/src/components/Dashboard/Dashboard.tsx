@@ -96,7 +96,7 @@ const DashboardPage = () => {
     })) || [];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 pl-16 md:pl-20">
       {/* Main Content */}
       <div className="flex-1 p-4 md:p-8">
         <div className="flex justify-between items-center mb-4 md:mb-6">

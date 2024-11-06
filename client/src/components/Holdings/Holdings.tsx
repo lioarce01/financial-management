@@ -115,7 +115,7 @@ export default function AccountHoldings() {
   }, [allHoldings, dispatch]);
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <div className="flex-1 overflow-hidden pl-16 md:pl-20">
       <div className="h-full overflow-y-auto px-4 py-6 lg:px-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Account Holdings
