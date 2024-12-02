@@ -14,19 +14,9 @@ Socket.IO: Escucha eventos del backend y actualiza la vista del usuario o muestr
 Node.js con ExpressJS, Prisma, Typescript, PostgreSQL, Helmet.
 Socket.IO: Emite eventos de actualización de saldo o nuevas transacciones al frontend cada vez que el backend recibe nuevos datos desde la API bancaria o el sistema de cuentas.
 
-### Arquitectura de Microservicios:
-
-Organizacion de backend en servicios independientes para manejar autenticación, transacciones, cuentas y procesamiento de datos.
-APIs REST.
-Validación y Seguridad: Helmet para protección contra vulnerabilidades y class-validator para validar la entrada de datos.
-
 ### Autenticación:
 
 manejo de autenticación y autorización.
-
-### Transacciones:
-
-procesar y registrar transacciones (implementable en una segunda fase).
 
 ### Cuentas Bancarias y Gastos:
 
