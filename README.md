@@ -27,6 +27,6 @@ conecxion con APIs de terceros como Plaid para obtener y actualizar datos bancar
 enviar notificaciones (por email o push) cuando se detecten actividades importantes.
 Base de Datos
 
-### PostgreSQL
+### MongoDB
 
 Base de datos NoSQL para almacenar los datos principales (transacciones, cuentas, historial de usuarios).
